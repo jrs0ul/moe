@@ -1,0 +1,38 @@
+data/pics/chars.tga
+16 16 1
+data/pics/world.tga
+32 32 1
+data/pics/creature1.tga
+32 32 1
+data/pics/creature2.tga
+32 32 1
+data/pics/fireball.tga
+32 32 1
+data/pics/creature3.tga
+32 32 1
+data/pics/creature4.tga
+32 32 1
+data/pics/arieswin.tga
+155 108 1
+data/pics/pinguwin.tga
+97 57 1
+data/pics/snake.tga
+128 128 1
+data/pics/sharkwin.tga
+176 118 1
+data/pics/background.tga
+480 640 1
+data/pics/smoke.tga
+32 32 1
+data/pics/title.tga
+220 512 1
+data/pics/creature1mask.tga
+32 32 1
+data/pics/creature2mask.tga
+32 32 1
+data/pics/creature3mask.tga
+32 32 1
+data/pics/creature4mask.tga
+32 32 1
+data/pics/menu.tga
+32 128 1
