@@ -1,5 +1,3 @@
-
-
 #include "externals.h"
 
 

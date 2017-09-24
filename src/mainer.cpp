@@ -118,8 +118,6 @@ void checkKeys(){
 
     if (JoyNum > 0) {
 
-        //printf("%s\n", SDL_JoystickName(0));
-
         SDL_JoystickUpdate ();
         JoyX = SDL_JoystickGetAxis(Joy, 0);
         JoyY = SDL_JoystickGetAxis(Joy, 1);

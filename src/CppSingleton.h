@@ -100,6 +100,7 @@ private:
     void Impact();
 
     void drawSelectRace();
+    void DrawVictoryDialog();
     void selectRaceLogic();
 
 

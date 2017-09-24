@@ -9,16 +9,13 @@ Creature * Population::get(unsigned index){
 }
 //-------------------
 void Population::nextActive(unsigned &Active, unsigned index){
-
     DArray<unsigned> tmp;
     unsigned irace = creatures[index].race;
     for (unsigned a = 0; a < creatures.count(); a++){
         if (((creatures[a].race == irace)&&(!creatures[a].dead))||(a == index))
             tmp.add(a);
     }
-    //printf("before---%d\n", Active);
     for (unsigned a = 0; a < tmp.count(); a++){
-        printf("%d\n", tmp[a]);
         if (tmp[a] == Active){
             if (a + 1 < tmp.count())
                 Active = tmp[a+1];
@@ -27,7 +24,6 @@ void Population::nextActive(unsigned &Active, unsigned index){
             break;
         }
     }
-    //printf("after---%d\n", Active);
     creatures[Active].controled = true;
     tmp.destroy();
 }
@@ -92,23 +88,18 @@ void Population::groundEffect(unsigned i, LevelMap& map){
 
         switch(TerrainType){
             case 0: {
-                //puts("ground");
                 creatures[i].hp+= creatures[i].groundBonus;
             }break;
             case 1: {
-                //puts("grass");
                 creatures[i].hp+= creatures[i].grassBonus;
             }break;
             case 2: {
-                //puts("water");
                 creatures[i].hp+= creatures[i].waterBonus;
             }break;
             case 3: {
-                //puts("ice");
                 creatures[i].hp+= creatures[i].iceBonus;
             }break;
             case 4: {
-                //puts("fire");
                 creatures[i].hp+= creatures[i].fireBonus;
             }break;
         }
@@ -129,8 +120,6 @@ void Population::groundEffect(unsigned i, LevelMap& map){
             creatures[i].hp = 0;
 
     }
-
-    
 }
 //----------------------------
 int Population::countByRace(unsigned race){

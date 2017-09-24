@@ -111,38 +111,9 @@ void Singleton::drawGame(){
     sprintf(buf,"Time left until impact: %d", timeleft);
     WriteShadedText(320-strlen(buf)*13/2, 10, pics, 0, buf);
 
-    if (showWinner){
-            pics.draw(-1,120,140,0, false,400,200,0, COLOR(0.4,0.4,0.4,0.8), COLOR(0.4, 0.4, 0.4, 0.8));
-        if ((!draw)&&(winnerRace)){
-            char raceName[50];
-            switch(winnerRace){
-
-                case 2:{
-                        strcpy(raceName, "Pengufolk");
-                        pics.draw(8, 125, 145, 0, false);
-                       } break;
-                case 3:{
-                        strcpy(raceName, "Goatlings");
-                        pics.draw(7, 125, 145, 0, false);
-                       }break;
-                case 5:{ 
-                        strcpy(raceName, "Sharkmen");
-                        pics.draw(10, 360, 145, 0, false);
-                       }break;
-                case 6:{
-                        strcpy(raceName, "Nagas");
-                        pics.draw(9, 125, 145, 0, false);
-                        };break;
-            }
-            char finalBuff[255];
-            sprintf(finalBuff, "%s have won!", raceName);
-            WriteShadedText(320 - (strlen(finalBuff)*14)/2, 230, pics, 0, finalBuff);
-
-        }
-        else{
-
-            WriteShadedText(320-100, 230, pics, 0, "Draw!");
-        }
+    if (showWinner)
+    {
+        DrawVictoryDialog();
     }
     unsigned race1 = _RaceIndex[p[0].raceIndex];
     unsigned race2 = _RaceIndex[p[1].raceIndex];
@@ -234,16 +205,20 @@ void Singleton::gameLogic(){
 
     Mapas.animateTiles();
 
-    for (unsigned i = 0; i < Creatures.count(); i++){
+    for (unsigned i = 0; i < Creatures.count(); ++i)
+    {
         Creature * c = Creatures.get(i);
+
         if (!startImpact)
-            c->AI(640, 480);
+        {
+            c->AI(kiScreenWidth, kiScreenHeight);
+        }
+
         c->animate();
 
         //if (i == 0){
-        if (!showWinner){
-
-            //SOMETHING WRONG HERE-------
+        if (!showWinner)
+        {
             Creatures.groundEffect(i, Mapas);
             if (c->hp <= 0){
                 c->dead = true;
@@ -328,13 +303,13 @@ void Singleton::gameLogic(){
             if (c->pos.v[1] > c->radius)
                 c->pos.v[1] -= speed;
         if (Keys[9])
-            if (c->pos.v[1] < 480 - c->radius)
+            if (c->pos.v[1] < kiScreenHeight - c->radius)
                 c->pos.v[1] += speed;
         if (Keys[10])
             if (c->pos.v[0] > c->radius)
                 c->pos.v[0] -= speed;
         if (Keys[11])
-            if (c->pos.v[0] < 640 - c->radius)
+            if (c->pos.v[0] < kiScreenWidth - c->radius)
                 c->pos.v[0] += speed;
 
         spawn(0, 4);
@@ -348,13 +323,13 @@ void Singleton::gameLogic(){
                 if (c->pos.v[1] > c->radius)
                 c->pos.v[1] -= speed;
             if (Keys[1])
-                if (c->pos.v[1] < 480 - c->radius)
+                if (c->pos.v[1] < kiScreenHeight - c->radius)
                     c->pos.v[1] += speed;
             if (Keys[2])
                 if (c->pos.v[0] > c->radius)
                     c->pos.v[0] -= speed;
             if (Keys[3])
-                if (c->pos.v[0] < 640 - c->radius)
+                if (c->pos.v[0] < kiScreenWidth - c->radius)
                     c->pos.v[0] += speed;
 
             spawn(1, 5);
@@ -377,7 +352,6 @@ void Singleton::gameLogic(){
                         if (len < shortestDistance){
                             shortestDistance = len;
                             dir = d;
-                            //printf("%f %f %f  %f\n", dir.v[0], dir.v[1], dir.v[2], shortestDistance);
                         }
                     }
                 }
@@ -389,7 +363,6 @@ void Singleton::gameLogic(){
                 
                 if ((c->pos.v[1] < 480 - c->radius) && (c->pos.v[0] < 640 - c->radius)
                     &&(c->pos.v[0] > c->radius) && (c->pos.v[1] > c->radius)){
-                    //printf("%f %f %f\n", c->dir.v[0], c->dir.v[1], c->dir.v[2]);
                     c->pos = c->pos + Vector3D(c->dir.v[0]*speed,
                                                c->dir.v[1]*speed,
                                                0);
@@ -419,12 +392,6 @@ void Singleton::gameLogic(){
     }
 
 
-    //printf("%lu\n", creatures.count()-1);
-
-    /*for (unsigned long i = 0; i < creatures.count(); i++){
-        if (creatures[i].dead)
-            creatures.remove(i);
-    }*/
 }
 //--------------------------
 void Singleton::drawMainMenu(){
@@ -584,6 +551,45 @@ void Singleton::drawSelectRace(){
 
 
     pics.drawBatch(666);
+
+}
+
+void Singleton::DrawVictoryDialog()
+{
+    pics.draw(-1,120,140,0, false,400,200,0, COLOR(0.4,0.4,0.4,0.8), COLOR(0.4, 0.4, 0.4, 0.8));
+    if ((!draw)&&(winnerRace))
+    {
+
+        int iRaceNameIndex = 0;
+        switch(winnerRace){
+
+            case 2:{
+                        iRaceNameIndex = 1;
+                        pics.draw(8, 125, 145, 0, false);
+                   } break;
+            case 3:{
+                        iRaceNameIndex = 0;
+                        pics.draw(7, 125, 145, 0, false);
+                   }break;
+            case 5:{ 
+                        iRaceNameIndex = 2;
+                        pics.draw(10, 360, 145, 0, false);
+                    }break;
+            case 6:{
+                        iRaceNameIndex = 3;
+                        pics.draw(9, 125, 145, 0, false);
+                    };break;
+        }
+
+        char finalBuff[255];
+        sprintf(finalBuff, "%s have won!", RaceNames[iRaceNameIndex]);
+        WriteShadedText(320 - (strlen(finalBuff)*14)/2, 230, pics, 0, finalBuff);
+
+    }
+    else
+    {
+        WriteShadedText(320-100, 230, pics, 0, "Draw!");
+    }
 
 }
 
