@@ -5,6 +5,18 @@
 #include <ctime>
 
 
+Singleton* Singleton::m_Instance = 0;
+
+Singleton* Singleton::GetInstance()
+{
+    if (m_Instance == 0)
+    {
+        m_Instance = new Singleton();
+    }
+
+    return m_Instance;
+}
+
 void Singleton::setMusicVolume(float vol){
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     MusicVolume = vol;
@@ -58,13 +70,7 @@ void Singleton::init(int width, int height){
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-/*#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-    glViewport(0, 0, 320, 480);
-    glRotatef(-90, 0, 0, 1);
-    glOrthof(0.0, (GLfloat) 480, (GLfloat) 320, 0.0, 400, -400);
-#else*/
     glOrtho(0.0, (GLfloat) width, (GLfloat) height, 0.0, 400, -400);
-//#endif
     
         
     if (!pics.load("data/pics/list.txt"))
@@ -92,15 +98,9 @@ void Singleton::drawGame(){
     Mapas.draw(pics, 1, 0, 0, 1.0f, 640, 480);
     Creatures.draw(pics);
 
-    if ((launchFireBall)&&(!startImpact)){
-
-        for (unsigned i = 0; i < trail.count(); i++){
-            pics.draw(12, trail[i].pos.v[0], trail[i].pos.v[1], 0, true,
-                      trail[i].size, trail[i].size, 0, trail[i].c, trail[i].c);
-        }
-        pics.draw(4, fireballPos.v[0], fireballPos.v[1], fireballFrame, true,
-        3.7f - fireBallTics/80.0f, 3.7f - fireBallTics/80.0f);
-
+    if ((launchFireBall)&&(!startImpact))
+    {
+        m_Meteor.Render(pics);
     }
 
     char buf[50];
@@ -237,7 +237,7 @@ void Singleton::gameLogic(){
     for (unsigned i = 0; i < Creatures.count(); i++){
         Creature * c = Creatures.get(i);
         if (!startImpact)
-            c->AI();
+            c->AI(640, 480);
         c->animate();
 
         //if (i == 0){
@@ -249,13 +249,11 @@ void Singleton::gameLogic(){
                 c->dead = true;
                 
                 if (i == p[0].activeCreature){
-                    //puts("veikia");
                     Creatures.get(p[0].activeCreature)->controled = false;
                     Creatures.nextActive(p[0].activeCreature, i);
                 }
 
                 if (i == p[1].activeCreature){
-                    //puts("veikia");
                     Creatures.get(p[1].activeCreature)->controled = false;
                     Creatures.nextActive(p[1].activeCreature, i);
                 }
@@ -266,54 +264,27 @@ void Singleton::gameLogic(){
     }
 
   
-    if (launchFireBall){
-        fireballPos = fireballPos +
-                      Vector3D(fireballDir.v[0]*2,fireballDir.v[1]*2,0);
-        fireballAnimTics++;
-        if (fireballAnimTics > 10){
-
-            Cloud c;
-            c.pos = fireballPos;
-            c.c = COLOR(1,1,1,1);
-            c.size = 1.5f;
-            trail.add(c);
-
-            fireballAnimTics = 0;
-            fireballFrame++;
-            if (fireballFrame > 2)
-                fireballFrame = 0;
-        }
+    if (launchFireBall)
+    {
+        m_Meteor.AnimateFireBall();
     }
 
-    for (unsigned i = 0; i < trail.count(); i++){
-        trail[i].tics++;
-        if (trail[i].tics > 4){
-            trail[i].size -= 0.05f;
-            trail[i].tics = 0;
-            trail[i].c.c[3]-=0.025f;
-        }
-    }
-
+    m_Meteor.AnimateTrail();
+    
     time_t now;
     time(&now);
     diffas = difftime(now, start);
-    //printf("%lf\n", diffas);
 
-
-    if (startImpact){
+    if (startImpact)
+    {
         Impact();
-
     }
 
 
-    if (launchFireBall){
-        fireBallTics++;
-        if (fireBallTics == 150){
-
-            if (!ss.isPlaying(0)){
-                ss.playsound(0);
-                trail.destroy();
-            }
+    if (launchFireBall)
+    {
+        if (m_Meteor.Update(ss))
+        {
             startImpact = true;
         }
     }
@@ -487,7 +458,8 @@ void Singleton::resetGame(){
     showWinner = false;
     winnerRace = 0;
 
-    trail.destroy();
+    m_Meteor.Destroy();
+
     Creatures.destroy();
     Mapas.generate(MaxMapWidth, MaxMapHeight);
 
@@ -503,10 +475,7 @@ void Singleton::resetGame(){
     impactStep = -1;
     impactCounter=0;
     impactanimtics = 0;
-    fireBallTics = 0;
     launchFireBall = false;
-    fireballPos = Vector3D(600,10,0);
-    fireballDir = Vector3D(-1, 0.7,0);
 
 }
 //------------------------
@@ -697,7 +666,7 @@ void Singleton::destroy(){
 
     Creatures.destroy();
     Mapas.destroy();
-    trail.destroy();
+    m_Meteor.Destroy();
 
     ss.exit();
     pics.destroy();

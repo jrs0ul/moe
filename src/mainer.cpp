@@ -47,22 +47,22 @@ int _MouseX, _MouseY;
 unsigned long tick;
 
 
-Singleton Game;
+Singleton* Game;
 
 
 void ConfGL(){
-    Game.init();
+    Game->init();
 }
 //-----------------
 void RenderScreen(){
-    Game.render();
+    Game->render();
     glFlush();
 
     SDL_GL_SwapBuffers( );
 }
 //-----------------
 void Logic(){
-    Game.logic();
+    Game->logic();
 }
 //-----------------
 static void  process_events(){
@@ -75,33 +75,33 @@ static void  process_events(){
 
         case SDL_KEYDOWN:{
 
-            Game.globalKEY = (char)event.key.keysym.unicode;
+            Game->globalKEY = (char)event.key.keysym.unicode;
             switch( event.key.keysym.sym ) {
                 default:{}
             }
         } break;
         case SDL_MOUSEBUTTONUP:{
             Vector3D pos(event.button.x, event.button.y, 0);
-            Game.touches.up.add(pos);
-            Game.touches.allfingersup = true;
+            Game->touches.up.add(pos);
+            Game->touches.allfingersup = true;
         } break;
         case SDL_MOUSEBUTTONDOWN:{
             Vector3D pos(event.button.x, event.button.y, 0);
-            Game.touches.down.add(pos);
-            Game.touches.allfingersup = false;
+            Game->touches.down.add(pos);
+            Game->touches.allfingersup = false;
 
         } break;
         case SDL_MOUSEMOTION:{
             if(SDL_GetMouseState(0, 0)&SDL_BUTTON_LMASK){
                 Vector3D pos(event.button.x, event.button.y, 0);
-                Game.touches.move.add(pos);
-                Game.touches.allfingersup = false;
+                Game->touches.move.add(pos);
+                Game->touches.allfingersup = false;
             }
         }break;
 
 
         case SDL_QUIT:{
-            Game.Exit = true;
+            Game->Exit = true;
         }break;
     
         }
@@ -125,53 +125,53 @@ void checkKeys(){
         JoyY = SDL_JoystickGetAxis(Joy, 1);
     }
 
-    int bm;
-    bm = SDL_GetRelativeMouseState ( &MouseX,&MouseY );
+    
+    SDL_GetRelativeMouseState ( &MouseX,&MouseY );
     SDL_GetMouseState(&_MouseX, &_MouseY);
 
-    Game.gamepad.v[0] = JoyX/ 1000.0f;
-    Game.gamepad.v[1] = JoyY/ 1000.0f;
+    Game->gamepad.v[0] = JoyX/ 1000.0f;
+    Game->gamepad.v[1] = JoyY/ 1000.0f;
 
-    memset(Game.OldKeys, 0, 20);
-    memcpy(Game.OldKeys, Game.Keys, 20);
-    memset(Game.Keys, 0, 20);
+    memset(Game->OldKeys, 0, 20);
+    memcpy(Game->OldKeys, Game->Keys, 20);
+    memset(Game->Keys, 0, 20);
 
     //P II
-    if ( keys[SDLK_w] )     Game.Keys[0] = 1;
-    if ( keys[SDLK_s] )     Game.Keys[1] = 1;
-    if ( keys[SDLK_a] )     Game.Keys[2] = 1;
-    if ( keys[SDLK_d] )     Game.Keys[3] = 1;
-    if ( keys[SDLK_SPACE])  Game.Keys[6] = 1;
-    if ( keys[SDLK_e])      Game.Keys[5] = 1;
+    if ( keys[SDLK_w] )     Game->Keys[0] = 1;
+    if ( keys[SDLK_s] )     Game->Keys[1] = 1;
+    if ( keys[SDLK_a] )     Game->Keys[2] = 1;
+    if ( keys[SDLK_d] )     Game->Keys[3] = 1;
+    if ( keys[SDLK_SPACE])  Game->Keys[6] = 1;
+    if ( keys[SDLK_e])      Game->Keys[5] = 1;
 
     //P I
-    if ( keys[SDLK_UP] )    Game.Keys[8] = 1;
-    if ( keys[SDLK_DOWN])   Game.Keys[9] = 1;
-    if ( keys[SDLK_LEFT])   Game.Keys[10] = 1;
-    if ( keys[SDLK_RIGHT])  Game.Keys[11] = 1;
-    if ( keys[SDLK_RSHIFT]) Game.Keys[7] = 1;
-    if ( keys[SDLK_RETURN]) Game.Keys[4] = 1;
+    if ( keys[SDLK_UP] )    Game->Keys[8] = 1;
+    if ( keys[SDLK_DOWN])   Game->Keys[9] = 1;
+    if ( keys[SDLK_LEFT])   Game->Keys[10] = 1;
+    if ( keys[SDLK_RIGHT])  Game->Keys[11] = 1;
+    if ( keys[SDLK_RSHIFT]) Game->Keys[7] = 1;
+    if ( keys[SDLK_RETURN]) Game->Keys[4] = 1;
 
 
-    if ( keys[SDLK_ESCAPE])  Game.Keys[12] = 1;
+    if ( keys[SDLK_ESCAPE])  Game->Keys[12] = 1;
 
     if (JoyNum){
 
-        if (Game.gamepad.v[1] < -1)
-            Game.Keys[8] = 1;
-        if (Game.gamepad.v[1] > 1)
-            Game.Keys[9] = 1;
-        if (Game.gamepad.v[0] < -1)
-            Game.Keys[10] = 1;
-        if (Game.gamepad.v[0] > 1)
-            Game.Keys[11] = 1;
+        if (Game->gamepad.v[1] < -1)
+            Game->Keys[8] = 1;
+        if (Game->gamepad.v[1] > 1)
+            Game->Keys[9] = 1;
+        if (Game->gamepad.v[0] < -1)
+            Game->Keys[10] = 1;
+        if (Game->gamepad.v[0] > 1)
+            Game->Keys[11] = 1;
 
         if (SDL_JoystickGetButton (Joy, 0))
-            Game.Keys[4] = 1;
+            Game->Keys[4] = 1;
         if (SDL_JoystickGetButton (Joy, 1))
-            Game.Keys[7] = 1;
+            Game->Keys[7] = 1;
         if (SDL_JoystickGetButton (Joy, 2))
-            Game.Keys[12] = 1;
+            Game->Keys[12] = 1;
     }
 }
 
@@ -184,8 +184,11 @@ int main( int   argc, char *argv[] ){
 
     char buf[255];
     GetHomePath(buf);
-    sprintf(Game.DocumentPath, "%s.MoE", buf);
-    MakeDir(Game.DocumentPath);
+
+    Game = Singleton::GetInstance();
+
+    sprintf(Game->DocumentPath, "%s.MoE", buf);
+    MakeDir(Game->DocumentPath);
 #ifdef __APPLE__
     CFBundleRef mainBundle = CFBundleGetMainBundle();
     CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
@@ -197,9 +200,9 @@ int main( int   argc, char *argv[] ){
     chdir(path);
 #endif
 
-    Game.loadCfg();
+    Game->loadCfg();
     SDL.setMetrics(WIDTH, HEIGHT);
-    if (!SDL.InitWindow("Multiply or Extinct", "icon.bmp", Game.sys.isWindowed)){
+    if (!SDL.InitWindow("Multiply or Extinct", "icon.bmp", Game->sys.isWindowed)){
         Works = false;
     }
 
@@ -212,7 +215,7 @@ int main( int   argc, char *argv[] ){
     //LoadExtensions();
     
 
-     while (!Game.Exit){
+     while (!Game->Exit){
         if ((SDL_GetTicks() > tick)){
 
             checkKeys();
@@ -227,7 +230,7 @@ int main( int   argc, char *argv[] ){
         process_events();
     }
 
-    Game.destroy();
+    Game->destroy();
 
     SDL.Quit();
 

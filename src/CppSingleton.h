@@ -14,10 +14,21 @@
 #include "Creature.h"
 #include "Population.h"
 #include "Player.h"
+#include "Meteor.h"
 
-enum GameStates {GAME, SELECTRACE, TITLE};
-enum GameModes {ONE, TWO};
+enum GameStates {
+    GAME,
+    SELECTRACE,
+    TITLE
+};
 
+enum GameModes {
+    ONE,
+    TWO
+};
+
+static const int kiScreenWidth = 640;
+static const int kiScreenHeight = 480;
 
 struct Joystick{
     Vector3D pos;
@@ -29,21 +40,55 @@ struct Joystick{
     }
 };
 
-struct Cloud{
-    Vector3D pos;
-    COLOR c;
-    float size;
-    int tics;
-
-    Cloud(){
-        size = 1.0f;
-        tics = 0;
-    }
-};
-
 
 class Singleton{
-    
+
+public:
+    static Singleton* GetInstance();
+    void loadCfg();
+    void init(int width = kiScreenWidth, int height = kiScreenHeight);
+    void logic();
+    void render();
+    void destroy();
+
+private:
+    Singleton(){
+        gamestate = TITLE;
+        Exit = false;
+        alpha = 0.0f;
+        fadeOut = false;
+        joyPressed = false;
+        acc = 24.0f;
+
+        ChangeVolume = false;
+        MusicVolume = 0.0f;
+        PlayMusic = false;
+        StopMusic = false;
+        PlayNewSong = false;
+
+
+        p[0].activeCreature = 0;
+        p[1].activeCreature = 5;
+
+
+        secondsUntilImpact = timeUntilImpact;
+
+        startImpact = false;
+        impactStep = -1;
+        impactCounter=0;
+        impactanimtics = 0;
+        launchFireBall = false;
+        showWinner = false;
+        draw = false;
+        winnerRace = 0;
+        winnerClick = false;
+        activeButton = 0;
+
+        OnePlayer_button.set(470, 400, 128, 32);
+        TwoPlayer_button.set(470, 440, 128, 32);
+
+    }
+
     void setMusicVolume(float vol);
     void playMusic();
     void playNewSong(const char* path);
@@ -84,6 +129,7 @@ public:
 
     time_t start;
     double diffas;
+    bool launchFireBall;
     int secondsUntilImpact;
     bool startImpact;
     int impactStep;
@@ -95,36 +141,23 @@ public:
     bool draw;
 
 
-    DArray<Cloud> trail;
-
     SystemConfig sys;
     
     Vector3D accelerometer;
     Vector3D gamepad; //input from real device
 
-    int fireBallTics;
-    bool launchFireBall;
-    Vector3D fireballPos;
-    Vector3D fireballDir;
-    int fireballFrame;
-    int fireballAnimTics;
-
+   
     Button OnePlayer_button;
     Button TwoPlayer_button;
     int activeButton;
 
-
     Player p[2];
 
-    char DocumentPath[255];
-    
+    char DocumentPath[255];  
     char songName[255];
   
-   
-
     LevelMap Mapas;
     Population Creatures;
-
 
     Joystick joystick;
     TouchData touches;
@@ -133,70 +166,15 @@ public:
     float acc;
     GameStates gamestate;
     GameModes gamemode;
-    
     bool fadeOut;
     float alpha;
-    
     bool winnerClick;
-
     bool joyPressed;
-    
     unsigned globalKEY;
-    //---
-    
-    Singleton(){
-        gamestate = TITLE;
-        Exit = false;
-        alpha = 0.0f;
-        fadeOut = false;
-        joyPressed = false;
-        acc = 24.0f;
 
-        ChangeVolume = false;
-        MusicVolume = 0.0f;
-        PlayMusic = false;
-        StopMusic = false;
-        PlayNewSong = false;
-
-
-        p[0].activeCreature = 0;
-        p[1].activeCreature = 5;
-
-
-        secondsUntilImpact = timeUntilImpact;
-
-        startImpact = false;
-        impactStep = -1;
-        impactCounter=0;
-        impactanimtics = 0;
-        fireBallTics = 0;
-        launchFireBall = false;
-        fireballPos = Vector3D(600,10,0);
-        fireballDir = Vector3D(-1, 0.7,0);
-        fireballFrame = 0;
-        fireballAnimTics = 0;
-        showWinner = false;
-        draw = false;
-        winnerRace = 0;
-        winnerClick = false;
-        activeButton = 0;
-
-        OnePlayer_button.set(470, 400, 128, 32);
-        TwoPlayer_button.set(470, 440, 128, 32);
-
-
-    }
-    void loadCfg();
-    void init(int width = 640, int height = 480);
-    void logic();
-    void render();
-    void destroy();
-    
+private:
+    static Singleton* m_Instance;
+    Meteor            m_Meteor;
 };
 
-
-
-
-
 #endif //_CPP_SINGLETON
-

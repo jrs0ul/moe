@@ -88,25 +88,28 @@ void Creature::animate(){
     }
 }
 
-//---------------------------------------
-void Creature::AI(){
-
-
-    if (radius < 16){
-        radius+=0.09f;
+void Creature::AI(int iMaxAreaX, int iMaxAreaY)
+{
+    
+    if (radius < kfMaxRadius)
+    {
+        radius += kfGrowthIncrease;
     }
 
-    if (!controled){
+    if (controled == false)
+    {
         movetics++;
         int speed = 1;
 
         Vector3D posOld = pos;
         pos = pos + Vector3D(dir.v[0]*speed,
                          dir.v[1]*speed, 0);
-        if (!((pos.v[0] > radius)&&(pos.v[0] < 640 - radius)&&(pos.v[1] > radius)&&(pos.v[1] < 480 - radius)))
+        if (!((pos.v[0] > radius) && (pos.v[0] < iMaxAreaX - radius)
+              && (pos.v[1] > radius)&&(pos.v[1] < iMaxAreaY- radius)))
             pos = posOld;
 
-        if (movetics > 50){
+        if (movetics > 50)
+        {
             movetics = 0;
             int d = rand()%8;
             switch(d){
@@ -121,5 +124,4 @@ void Creature::AI(){
             }
         }
     }
-                
 }

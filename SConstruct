@@ -26,7 +26,8 @@ code = ["src/mainer.cpp",
         "src/SysConfig.cpp",
         "src/SDLVideo.cpp",
         "src/Threads.cpp",
-        "src/Population.cpp"
+        "src/Population.cpp",
+        "src/Meteor.cpp"
 
         ]
 
