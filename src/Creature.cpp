@@ -33,44 +33,51 @@ void Creature::draw(PicsContainer& pics){
 //-----------------------------
 
 void  Creature::makePenguin(){
-    iceBonus = 5;
-    groundBonus = -2;
-    waterBonus = -1;
-    grassBonus = 0;
-    fireBonus = -10;
+    iTerrainBonuses[ET_ICE] = 5;
+    iTerrainBonuses[ET_GROUND] = -2;
+    iTerrainBonuses[ET_WATER] = 1;
+    iTerrainBonuses[ET_GRASS] = 0;
+    iTerrainBonuses[ET_LAVA] = -10;
+
     race = 2;
     mask = 14;
     hp = 85; 
 }
 //-----------------------------
-void Creature::makeGoat(){
-    iceBonus = -3;
-    groundBonus = 2;
-    waterBonus = -3;
-    grassBonus = 5;
-    fireBonus = -10;
+void Creature::makeGoat()
+{
+    iTerrainBonuses[ET_ICE] = -2;
+    iTerrainBonuses[ET_GROUND] = 2;
+    iTerrainBonuses[ET_WATER] = -3;
+    iTerrainBonuses[ET_GRASS] = 5;
+    iTerrainBonuses[ET_LAVA] = -10;
+
     race = 3;
     mask = 15;
     hp = 65;
 }
 //-----------------------------
 void Creature::makeSnake(){
-    iceBonus = -4;
-    groundBonus = 5;
-    waterBonus = -2;
-    grassBonus = 2;
-    fireBonus = -10;
+
+    iTerrainBonuses[ET_ICE] = -4;
+    iTerrainBonuses[ET_GROUND] = 5;
+    iTerrainBonuses[ET_WATER] = -2;
+    iTerrainBonuses[ET_GRASS] = 2;
+    iTerrainBonuses[ET_LAVA] = -10;
+
     race = 6;
     mask = 17;
     hp = 75;
 }
 //-----------------------------
 void Creature::makeShark(){
-    iceBonus = -3;
-    groundBonus = -2;
-    waterBonus = 5;
-    grassBonus = 1;
-    fireBonus = -10;
+
+    iTerrainBonuses[ET_ICE] = -1;
+    iTerrainBonuses[ET_GROUND] = -2;
+    iTerrainBonuses[ET_WATER] = 5;
+    iTerrainBonuses[ET_GRASS] = -1;
+    iTerrainBonuses[ET_LAVA] = -10;
+
     race = 5;
     mask = 16;
     hp = 55;
@@ -88,9 +95,11 @@ void Creature::animate(){
     }
 }
 
-void Creature::AI(int iMaxAreaX, int iMaxAreaY)
+void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
 {
     
+    const int speed = 1;
+
     if (radius < kfMaxRadius)
     {
         radius += kfGrowthIncrease;
@@ -98,30 +107,48 @@ void Creature::AI(int iMaxAreaX, int iMaxAreaY)
 
     if (controled == false)
     {
-        movetics++;
-        int speed = 1;
-
-        Vector3D posOld = pos;
-        pos = pos + Vector3D(dir.v[0]*speed,
-                         dir.v[1]*speed, 0);
-        if (!((pos.v[0] > radius) && (pos.v[0] < iMaxAreaX - radius)
-              && (pos.v[1] > radius)&&(pos.v[1] < iMaxAreaY- radius)))
-            pos = posOld;
-
-        if (movetics > 50)
+        if (movetics < 50)
         {
-            movetics = 0;
-            int d = rand()%8;
-            switch(d){
-                case 0: dir = Vector3D(1, 0, 0); break;
-                case 1: dir = Vector3D(-1, 0, 0); break;
-                case 2: dir = Vector3D(0,-1,0); break;
-                case 3: dir = Vector3D(0, 1, 0); break;
-                case 4: dir = Vector3D(1, 1, 0); break;
-                case 5: dir = Vector3D(-1, -1, 0); break;
-                case 6: dir = Vector3D(1, -1, 0); break;
-                case 7: dir = Vector3D(-1, 1, 0); break;
+            movetics++;
+
+            Vector3D posOld = pos;
+            pos = pos + Vector3D(dir.v[0] * speed, dir.v[1] * speed, 0);
+
+            if (!((pos.v[0] > radius) && (pos.v[0] < iMaxAreaX - radius)
+              && (pos.v[1] > radius)&&(pos.v[1] < iMaxAreaY - radius)))
+            {
+                pos = posOld;
             }
+        }
+        else
+        {
+            int d = rand()%8;
+            const Vector3D vArray[8] = {{ 1, 0, 0}, 
+                                        {-1, 0, 0},
+                                        { 0,-1, 0},
+                                        { 0, 1, 0},
+                                        { 1, 1, 0},
+                                        {-1,-1, 0},
+                                        { 1,-1, 0},
+                                        {-1, 1, 0}};
+            dir = vArray[d];
+
+            unsigned mapX = (pos.v[0] +  dir.v[0] * speed * 25) / 32;
+            unsigned mapY = (pos.v[1] +  dir.v[1] * speed * 25) / 32;
+
+
+            int iTerrain = map.getTerrainType(mapX, mapY);
+
+            if (iTerrain < 0)
+            {
+                return;
+            }
+            
+            if (iTerrainBonuses[iTerrain] >= 0)
+            {
+                    movetics = 0;
+            }
+            
         }
     }
 }

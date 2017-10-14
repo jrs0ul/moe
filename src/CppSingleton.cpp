@@ -95,7 +95,7 @@ void Singleton::init(int width, int height){
 //----------------------------
 void Singleton::drawGame(){
 
-    Mapas.draw(pics, 1, 0, 0, 1.0f, 640, 480);
+    Mapas.draw(pics, 1, 0, 0, 1.0f, kiScreenWidth, kiScreenHeight);
     Creatures.draw(pics);
 
     if ((launchFireBall)&&(!startImpact))
@@ -178,23 +178,27 @@ void Singleton::whoWon(){
 //---------------------------
 void Singleton::spawn(unsigned pl, unsigned key){
 
-    if ((OldKeys[key])&&(!Keys[key])){
-        for (unsigned i = 0; i < Creatures.count(); i++){
-            Creature * me = Creatures.get(p[pl].activeCreature);
+    if ((OldKeys[key]) && (!Keys[key]))
+    {
+        Creature * me = Creatures.get(p[pl].activeCreature);
+
+        for (unsigned i = 0; i < Creatures.count(); ++i)
+        {
             Creature * he = Creatures.get(i);
 
-            if ((CirclesColide(me->pos.v[0],
+            bool colides = CirclesColide(me->pos.v[0],
                                me->pos.v[1],
                                me->radius,
                                he->pos.v[0],
                                he->pos.v[1],
-                               he->radius
+                               he->radius);
 
-                              ))&&(p[pl].activeCreature != i)
-                              &&(!he->gaveBirth) && (he->radius > 15.5f)
-                              &&(he->race == me->race)){
+            if ((colides) && (p[pl].activeCreature != i)
+                && (!he->gaveBirth) && (he->radius > 15.5f)
+                &&(he->race == me->race))
+            {
 
-            Creatures.makeChild(he);
+                Creatures.makeChild(he);
             }
         }
     }
@@ -211,7 +215,7 @@ void Singleton::gameLogic(){
 
         if (!startImpact)
         {
-            c->AI(kiScreenWidth, kiScreenHeight);
+            c->AI(kiScreenWidth, kiScreenHeight, Mapas);
         }
 
         c->animate();
@@ -220,6 +224,7 @@ void Singleton::gameLogic(){
         if (!showWinner)
         {
             Creatures.groundEffect(i, Mapas);
+
             if (c->hp <= 0){
                 c->dead = true;
                 
@@ -293,10 +298,9 @@ void Singleton::gameLogic(){
     }
 
 
-
     if (!startImpact){
         
-        float speed = 2;
+        const float speed = 2.f;
         Creature* c = 0;
         c = Creatures.get(p[0].activeCreature);
         if (Keys[8])
@@ -314,9 +318,6 @@ void Singleton::gameLogic(){
 
         spawn(0, 4);
         
-//------------------------
-
-
         if (gamemode == TWO){
             c = Creatures.get(p[1].activeCreature);
             if (Keys[0])
@@ -334,67 +335,16 @@ void Singleton::gameLogic(){
 
             spawn(1, 5);
         }
-        else{//SINGLEPLAYER AI
-            
-            c = Creatures.get(p[1].activeCreature);
-            if (!c->haveDir){
-                float shortestDistance = 10000.0f;
-                Vector3D dir = Vector3D(1,0,0);
-                for (unsigned i = 0; i < Creatures.count(); i++){
-                    Creature * mate = Creatures.get(i);
-                    if ((!mate->gaveBirth) && (!mate->dead) 
-                            && (mate->race == c->race)&&(p[1].activeCreature != i)&&
-                            (mate->radius > 15.5f)){
-                        mate->pos.v[2] = 0;
-                        c->pos.v[2] = 0;
-                        Vector3D d = mate->pos - c->pos;
-                        float len = d.length();
-                        if (len < shortestDistance){
-                            shortestDistance = len;
-                            dir = d;
-                        }
-                    }
-                }
-                dir.normalize();
-                c->dir = dir;
-                c->haveDir = true;
-            }
-            else{
-                
-                if ((c->pos.v[1] < 480 - c->radius) && (c->pos.v[0] < 640 - c->radius)
-                    &&(c->pos.v[0] > c->radius) && (c->pos.v[1] > c->radius)){
-                    c->pos = c->pos + Vector3D(c->dir.v[0]*speed,
-                                               c->dir.v[1]*speed,
-                                               0);
-                }
-                c->haveDir = false;
-            }
-
-            for (unsigned i = 0; i < Creatures.count(); i++){
-                Creature * he = Creatures.get(i);
-
-                if ((CirclesColide(c->pos.v[0],
-                                   c->pos.v[1],
-                                   c->radius,
-                                   he->pos.v[0],
-                                   he->pos.v[1],
-                                   he->radius
-
-                              ))&&(p[1].activeCreature != i)
-                              &&(!he->gaveBirth) && (he->radius > 15.5f)
-                              &&(he->race == c->race)){
-
-                    Creatures.makeChild(he);
-                }
-            }
-        }//SINGLEPLAYER AI
+        else
+        {
+            SinglePlayerAI(kiScreenWidth, kiScreenHeight, speed);
+        }
 
     }
-
-
 }
-//--------------------------
-void Singleton::drawMainMenu(){
+
+void Singleton::drawMainMenu()
+{
     pics.draw(11,0,0);
     pics.draw(13,300,50, 0, false, 0.5f, 0.5f);
     //WriteShadedText(370, 420, pics, 0, "Press Enter to play...");
@@ -500,6 +450,71 @@ void Singleton::selectRaceLogic(){
         }
 
     }
+}
+
+void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
+{
+    Creature* c = Creatures.get(p[1].activeCreature);
+
+    if (!c->haveDir)
+    {
+        float shortestDistance = 10000.0f;
+        Vector3D dir = Vector3D(1,0,0);
+        //finds direction to the nearest creature
+        for (unsigned i = 0; i < Creatures.count(); i++)
+        {
+            Creature * mate = Creatures.get(i);
+
+            if ((!mate->gaveBirth) && (!mate->dead) 
+                && (mate->race == c->race)&&(p[1].activeCreature != i)&& (mate->radius > 15.5f))
+            {
+                mate->pos.v[2] = 0;
+                c->pos.v[2] = 0;
+                Vector3D d = mate->pos - c->pos;
+                float len = d.length();
+                if (len < shortestDistance)
+                {
+                    shortestDistance = len;
+                    dir = d;
+                }
+            }
+        }
+
+        dir.normalize();
+        c->dir = dir;
+        c->haveDir = true;
+    }
+    else
+    {
+        if ((c->pos.v[1] < iMaxAreaY - c->radius) && (c->pos.v[0] < iMaxAreaY - c->radius)
+                    &&(c->pos.v[0] > c->radius) && (c->pos.v[1] > c->radius))
+        {
+            c->pos = c->pos + Vector3D(c->dir.v[0] * speed, c->dir.v[1] * speed, 0);
+        }
+
+        c->haveDir = false;
+
+    }
+
+    for (unsigned i = 0; i < Creatures.count(); ++i)
+    {
+        Creature * he = Creatures.get(i);
+
+        if ((CirclesColide(c->pos.v[0],
+                            c->pos.v[1],
+                            c->radius,
+                            he->pos.v[0],
+                            he->pos.v[1],
+                            he->radius
+
+                              ))&&(p[1].activeCreature != i)
+                              &&(!he->gaveBirth) && (he->radius > 15.5f)
+                              &&(he->race == c->race))
+        {
+            Creatures.makeChild(he);
+        }
+    }
+
 }
 //------------------------
 void Singleton::drawSelectRace(){

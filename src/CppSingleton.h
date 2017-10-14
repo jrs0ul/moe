@@ -104,7 +104,7 @@ private:
     void selectRaceLogic();
 
 
-
+    void SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed);
 
     void whoWon();
     void mainMenuLogic();

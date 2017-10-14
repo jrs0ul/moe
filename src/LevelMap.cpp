@@ -212,6 +212,28 @@ void LevelMap::draw(PicsContainer& pics, unsigned index, int x, int y,
                               COLOR(tcolor.c[0] * c, tcolor.c[1] * c, tcolor.c[2] * c));
             }
 }
+
+int LevelMap::getTerrainType(unsigned x, unsigned y) const
+{
+    if ((x < width)&&(y < height)){
+        int TerrainType = map[y][x].picture;
+       // printf("pic %d ", TerrainType);
+        if (map[y][x].picture > 2){
+            if (map[y][x].picture == 6)
+                TerrainType = 3;
+            if (map[y][x].picture > 6)
+                TerrainType = 4;
+
+            if (map[y][x].picture < 6)
+                TerrainType = 2;
+        }
+
+        return TerrainType;
+    }
+
+    return -1;
+
+}
 //-----------------------
 void LevelMap::setTile(unsigned x, unsigned y, Tile & t){
 
@@ -242,46 +264,37 @@ void LevelMap::animateTiles(){
 //---------------------------
 void LevelMap::affectTile(unsigned x, unsigned y){
 
-    if ((x < width)&&(y < height)){
-        int TerrainType = map[y][x].picture;
-       // printf("pic %d ", TerrainType);
-        if (map[y][x].picture > 2){
-            if (map[y][x].picture == 6)
-                TerrainType = 3;
-            if (map[y][x].picture > 6)
-                TerrainType = 4;
-
-            if (map[y][x].picture < 6)
-                TerrainType = 2;
-        }
+    if ((x < width)&&(y < height))
+    {
+        int TerrainType = getTerrainType(x, y);
 
         switch(TerrainType){
-            case 0: {
+            case 0: { //sand
                 map[y][x].picture = 7;
                 map[y][x].animated = true;
                 map[y][x].frame = 0;
                 //puts("lava");
             }break;
-            case 1: {
+            case 1: {//grass
                 map[y][x].picture = 7;
                 map[y][x].animated = true;
                 map[y][x].frame = 0;
                 //puts("lava");
             }break;
-            case 2: {
+            case 2: {//water
                 map[y][x].picture = 0;
                 map[y][x].animated = false;
                 map[y][x].frame = 0;
                 //puts("ground");
             }break;
-            case 3: {
+            case 3: {//ice
                 map[y][x].picture = 2;
                 map[y][x].animated = true;
                 map[y][x].frame = 0;
                 map[y][x].frame = 0;
                 //puts("water");
             }break;
-            case 4: {
+            case 4: {//lava
                 map[y][x].picture = 7;
                 map[y][x].animated = true;
                 map[y][x].frame = 0;

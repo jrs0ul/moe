@@ -44,11 +44,11 @@ void Population::makeChild(Creature * parent){
         case 5: trace = 2; break;
         case 6: trace = 3; break;
     }
-    child.groundBonus = parent->groundBonus;
-    child.waterBonus = parent->waterBonus;
-    child.grassBonus = parent->grassBonus;
-    child.fireBonus = parent->fireBonus;
-    child.iceBonus = parent->iceBonus;
+
+    for (int i = 0; i < ET_COUNT; ++i)
+    {
+        child.iTerrainBonuses[i] = parent->iTerrainBonuses[i];
+    }
 
     child.hp = MaxHps[trace]; 
 
@@ -64,45 +64,22 @@ void Population::draw(PicsContainer& pics){
 }
 //-------------------------
 void Population::groundEffect(unsigned i, LevelMap& map){
+
     creatures[i].damageTics++;
+
     if (creatures[i].damageTics > 10){
         creatures[i].damageTics = 0;
-        int x = creatures[i].pos.v[0]/32;
-        int y = (creatures[i].pos.v[1]+15)/32;
+        int x = creatures[i].pos.v[0] / 32;
+        int y = (creatures[i].pos.v[1]+15) / 32;
 
         if ((x < 0)||(x >= (int)MaxMapWidth))
             return;
         if ((y < 0)||(y >= (int)MaxMapHeight))
             return;
 
-        int TerrainType = map.map[y][x].picture;
-        if (map.map[y][x].picture > 2){
-            if (map.map[y][x].picture == 6)
-                TerrainType = 3;
-            if (map.map[y][x].picture > 6)
-                TerrainType = 4;
+        int TerrainType = map.getTerrainType(x, y);
 
-            if (map.map[y][x].picture < 6)
-                TerrainType = 2;
-        }
-
-        switch(TerrainType){
-            case 0: {
-                creatures[i].hp+= creatures[i].groundBonus;
-            }break;
-            case 1: {
-                creatures[i].hp+= creatures[i].grassBonus;
-            }break;
-            case 2: {
-                creatures[i].hp+= creatures[i].waterBonus;
-            }break;
-            case 3: {
-                creatures[i].hp+= creatures[i].iceBonus;
-            }break;
-            case 4: {
-                creatures[i].hp+= creatures[i].fireBonus;
-            }break;
-        }
+        creatures[i].hp += creatures[i].iTerrainBonuses[TerrainType];
 
         unsigned race = creatures[i].race;
         unsigned trace = 0;

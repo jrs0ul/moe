@@ -1,6 +1,7 @@
 #ifndef _LEVEL_MAP_H
 #define _LEVEL_MAP_H
 
+#include "TerrainTypes.h"
 #include "TextureLoader.h"
 #include "Xml.h"
 
@@ -45,6 +46,7 @@ struct LevelMap{
     void draw(PicsContainer& pics, unsigned index, int x, int y, 
               float c = 1.0f, int screenWidth = 480,
               int screenHeight = 320);
+    int  getTerrainType(unsigned x, unsigned y) const;
     void setTile(unsigned x, unsigned y, Tile & t);
     void animateTiles();
     void affectTile(unsigned x, unsigned y);
