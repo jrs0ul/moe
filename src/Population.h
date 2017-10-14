@@ -6,7 +6,6 @@
 
 class Population{
 
-    DArray<Creature> creatures;
 
 public:
 
@@ -15,11 +14,19 @@ public:
     void destroy(){creatures.destroy();}
 
     void nextActive(unsigned &Active, unsigned index);
-    void makeChild(Creature* parent);
     void draw(PicsContainer& pics);
+    void procreate(unsigned procreator);
     void groundEffect(unsigned i, LevelMap& map);
     int  countByRace(unsigned race);
     void create(unsigned race1, unsigned race2);
+
+private:
+
+    void makeChild(Creature* parent);
+
+private:
+    DArray<Creature> creatures;
+
 };
 
 

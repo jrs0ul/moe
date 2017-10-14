@@ -109,8 +109,6 @@ private:
     void whoWon();
     void mainMenuLogic();
 
-    void spawn(unsigned pl, unsigned key);
-
     void resetGame();
 
 public:

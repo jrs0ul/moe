@@ -22,6 +22,8 @@ public:
         damageTics = 0;
         dead = false;
         gaveBirth = false;
+        procreationCount = 0;
+        maxProcreationCount = 1;
 
         haveDir = false;
         dir = Vector3D(0.f, 0.f, 0.f);
@@ -30,16 +32,24 @@ public:
         {
             iTerrainBonuses[i] = 0;
         }
+
+        pulsationProgress = 0.1f;
+        pulseMultiplier = 1.f;
     }
 
     void draw(PicsContainer& pics);
     void AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map);
     void animate();
+
     void makePenguin();
     void makeGoat();
     void makeSnake();
     void makeShark();
 
+private:
+    void drawStatusBar(PicsContainer& pics, float x, float y, float current, float max, const COLOR& c);
+
+public:
 
     Vector3D pos;
     Vector3D dir;
@@ -49,18 +59,15 @@ public:
     int movetics;
 
     int iTerrainBonuses[ET_COUNT];
-
-    /*int iceBonus;
-    int groundBonus;
-    int waterBonus;
-    int grassBonus;
-    int fireBonus;*/
-
+ 
     unsigned race;
     unsigned mask;
     unsigned frame;
     unsigned animtics;
     unsigned damageTics;
+
+    unsigned procreationCount;
+    unsigned maxProcreationCount;
 
 
     bool dead;
@@ -68,6 +75,8 @@ public:
 
     bool haveDir;
     bool controled;
+    float pulsationProgress;
+    float pulseMultiplier;
 };
 
 

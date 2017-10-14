@@ -19,7 +19,7 @@ data/pics/pinguwin.tga
 data/pics/snake.tga
 128 128 1
 data/pics/sharkwin.tga
-176 118 1
+176 128 1
 data/pics/background.tga
 480 640 1
 data/pics/smoke.tga

@@ -5,15 +5,19 @@
 void Creature::draw(PicsContainer& pics){
     if (!dead){
 
-        COLOR c = ((gaveBirth)? COLOR(0.5,0.5,1) : COLOR(1,1,1)) ;
+        const COLOR c = ((gaveBirth)? COLOR(0.5,0.5,1) : COLOR(1,1,1)) ;
+        const COLOR procreationColor = (controled)? COLOR(0, 0, 1, 0.8) : COLOR(0,0,0.6f, 0.5f);
 
-        if ((controled)&&(rand()%2))
+        if (controled)
+        {
+            float fScale = radius / kfMaxRadius + 0.5f * pulsationProgress;
             pics.draw(mask, pos.v[0], pos.v[1], frame, true, 
-                  radius/16.0f + 0.15f, radius/16.0f + 0.15f, 0);
+                      fScale, fScale, 0);
+        }
 
 
         pics.draw(race, pos.v[0], pos.v[1], frame, true, 
-                  radius/16.0f, radius/16.0f, 0,
+                  radius / kfMaxRadius, radius / kfMaxRadius, 0,
                   c, c);
 
         unsigned trace = 0;
@@ -24,9 +28,10 @@ void Creature::draw(PicsContainer& pics){
             case 6: trace = 3; break;
         }
 
-        pics.draw(-1, pos.v[0]-15, pos.v[1]-22, 0, false, 30, 8, 0, COLOR(0.5,0.5,0.5,0.5));
-       float prcnt = hp/(MaxHps[trace]/100.0f);
-       pics.draw(-1, pos.v[0]-15, pos.v[1]-22, 0, false, 0.30*prcnt, 8, 0, COLOR(0.6,0,0,0.5), COLOR(0.6,0,0,0.5));
+        drawStatusBar(pics, pos.v[0]-15, pos.v[1]-22, hp, MaxHps[trace], COLOR(0.6f, 0.f, 0.f, 0.5f));
+        drawStatusBar(pics, pos.v[0]-15, pos.v[1]-30, 
+                      maxProcreationCount - procreationCount, maxProcreationCount, procreationColor);
+
     }
 
 }
@@ -42,6 +47,7 @@ void  Creature::makePenguin(){
     race = 2;
     mask = 14;
     hp = 85; 
+    maxProcreationCount = 3;
 }
 //-----------------------------
 void Creature::makeGoat()
@@ -55,6 +61,7 @@ void Creature::makeGoat()
     race = 3;
     mask = 15;
     hp = 65;
+    maxProcreationCount = 6;
 }
 //-----------------------------
 void Creature::makeSnake(){
@@ -68,6 +75,7 @@ void Creature::makeSnake(){
     race = 6;
     mask = 17;
     hp = 75;
+    maxProcreationCount = 2;
 }
 //-----------------------------
 void Creature::makeShark(){
@@ -81,8 +89,18 @@ void Creature::makeShark(){
     race = 5;
     mask = 16;
     hp = 55;
+    maxProcreationCount = 4;
 }
 
+void Creature::drawStatusBar(PicsContainer& pics, 
+                             float x, float y, float current, float max, const COLOR& c)
+{
+    pics.draw(-1, x, y, 0, false, 30, 8, 0, COLOR(0.5,0.5,0.5,0.5));
+    float prcnt = current / (max / 100.0f);
+    pics.draw(-1, x, y, 0, false, 0.30 * prcnt, 8, 0, c, c);
+
+
+}
 
 //-----------------------------
 void Creature::animate(){
@@ -97,7 +115,21 @@ void Creature::animate(){
 
 void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
 {
-    
+
+    if (controled)
+    {
+        pulsationProgress += (0.1f * pulseMultiplier);
+
+        if (pulsationProgress > 1.f)
+        {
+            pulseMultiplier = -1.f;
+        }
+        else if (pulsationProgress < -0.125f)
+        {
+            pulseMultiplier = 1.f;
+        }
+    }
+
     const int speed = 1;
 
     if (radius < kfMaxRadius)

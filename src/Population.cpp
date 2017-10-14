@@ -1,5 +1,6 @@
 #include "Population.h"
 #include "externals.h"
+#include "Utils.h"
 
 Creature * Population::get(unsigned index){
     if (index < creatures.count())
@@ -7,24 +8,43 @@ Creature * Population::get(unsigned index){
 
     return 0;
 }
-//-------------------
+
 void Population::nextActive(unsigned &Active, unsigned index){
+    
     DArray<unsigned> tmp;
+
     unsigned irace = creatures[index].race;
-    for (unsigned a = 0; a < creatures.count(); a++){
-        if (((creatures[a].race == irace)&&(!creatures[a].dead))||(a == index))
+    for (unsigned a = 0; a < creatures.count(); a++)
+    {
+        if (((creatures[a].race == irace) && (!creatures[a].dead)) || (a == index))
+        {
             tmp.add(a);
+        }
     }
-    for (unsigned a = 0; a < tmp.count(); a++){
-        if (tmp[a] == Active){
+
+    creatures[Active].controled = false;
+    creatures[Active].pulsationProgress = 0.f;
+    creatures[Active].pulseMultiplier = 1.f;
+
+    for (unsigned a = 0; a < tmp.count(); a++)
+    {
+        if (tmp[a] == Active)
+        {
             if (a + 1 < tmp.count())
+            {
                 Active = tmp[a+1];
+            }
             else
+            {
                 Active = tmp[0];
+            }
             break;
         }
     }
+
     creatures[Active].controled = true;
+    creatures[Active].pulsationProgress = 0.f;
+    creatures[Active].pulseMultiplier = 1.f;
     tmp.destroy();
 }
 //------------------------
@@ -34,8 +54,11 @@ void Population::makeChild(Creature * parent){
     parent->gaveBirth = true;
     child.pos = parent->pos;
     child.race = parent->race;
+    child.mask = parent->mask;
     child.dir = Vector3D(0,0,0);
     child.radius = 8;
+    child.pulsationProgress = 0.f;
+    child.pulseMultiplier = 1.f;
 
     unsigned trace = 0;
     switch (parent->race){
@@ -62,6 +85,35 @@ void Population::draw(PicsContainer& pics){
     }
 
 }
+
+
+void Population::procreate(unsigned procreator)
+{
+
+    Creature* c = get(procreator);
+
+    for (unsigned i = 0; i < count(); ++i)
+    {
+        Creature * he = get(i);
+
+        bool bColides = CirclesColide(c->pos.v[0],
+                            c->pos.v[1],
+                            c->radius,
+                            he->pos.v[0],
+                            he->pos.v[1],
+                            he->radius);
+
+        if ((bColides) && (procreator != i)
+            &&(!he->gaveBirth) && (he->radius > 15.5f)
+            &&(he->race == c->race) && (c->procreationCount < c->maxProcreationCount))
+        {
+            c->procreationCount++;
+            makeChild(he);
+        }
+    }
+
+}
+
 //-------------------------
 void Population::groundEffect(unsigned i, LevelMap& map){
 

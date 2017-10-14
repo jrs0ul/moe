@@ -175,36 +175,6 @@ void Singleton::whoWon(){
     }
 }
 
-//---------------------------
-void Singleton::spawn(unsigned pl, unsigned key){
-
-    if ((OldKeys[key]) && (!Keys[key]))
-    {
-        Creature * me = Creatures.get(p[pl].activeCreature);
-
-        for (unsigned i = 0; i < Creatures.count(); ++i)
-        {
-            Creature * he = Creatures.get(i);
-
-            bool colides = CirclesColide(me->pos.v[0],
-                               me->pos.v[1],
-                               me->radius,
-                               he->pos.v[0],
-                               he->pos.v[1],
-                               he->radius);
-
-            if ((colides) && (p[pl].activeCreature != i)
-                && (!he->gaveBirth) && (he->radius > 15.5f)
-                &&(he->race == me->race))
-            {
-
-                Creatures.makeChild(he);
-            }
-        }
-    }
-}
-
-//----------------------------
 void Singleton::gameLogic(){
 
     Mapas.animateTiles();
@@ -228,16 +198,15 @@ void Singleton::gameLogic(){
             if (c->hp <= 0){
                 c->dead = true;
                 
-                if (i == p[0].activeCreature){
-                    Creatures.get(p[0].activeCreature)->controled = false;
+                if (i == p[0].activeCreature)
+                {
                     Creatures.nextActive(p[0].activeCreature, i);
                 }
 
-                if (i == p[1].activeCreature){
-                    Creatures.get(p[1].activeCreature)->controled = false;
+                if (i == p[1].activeCreature)
+                {
                     Creatures.nextActive(p[1].activeCreature, i);
                 }
-                /*whoWon();*/
             }
             //----------------------
         }
@@ -276,12 +245,10 @@ void Singleton::gameLogic(){
 
     
     if ((OldKeys[7])&&(!Keys[7])){
-        Creatures.get(p[0].activeCreature)->controled = false;
         Creatures.nextActive(p[0].activeCreature, p[0].activeCreature);
     }
 
     if ((OldKeys[6])&&(!Keys[6])){
-        Creatures.get(p[1].activeCreature)->controled = false;
         Creatures.nextActive(p[1].activeCreature, p[1].activeCreature);
     }
 
@@ -316,7 +283,11 @@ void Singleton::gameLogic(){
             if (c->pos.v[0] < kiScreenWidth - c->radius)
                 c->pos.v[0] += speed;
 
-        spawn(0, 4);
+        if ((OldKeys[4]) && (!Keys[4]))
+        {
+            Creatures.procreate(p[0].activeCreature);
+        }
+
         
         if (gamemode == TWO){
             c = Creatures.get(p[1].activeCreature);
@@ -333,7 +304,11 @@ void Singleton::gameLogic(){
                 if (c->pos.v[0] < kiScreenWidth - c->radius)
                     c->pos.v[0] += speed;
 
-            spawn(1, 5);
+            if ((OldKeys[5]) && (!Keys[5]))
+            {
+                Creatures.procreate(p[1].activeCreature);
+            }
+
         }
         else
         {
@@ -496,25 +471,13 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
 
     }
 
-    for (unsigned i = 0; i < Creatures.count(); ++i)
+    Creatures.procreate(p[1].activeCreature);
+
+    if (c->procreationCount >= c->maxProcreationCount)
     {
-        Creature * he = Creatures.get(i);
-
-        if ((CirclesColide(c->pos.v[0],
-                            c->pos.v[1],
-                            c->radius,
-                            he->pos.v[0],
-                            he->pos.v[1],
-                            he->radius
-
-                              ))&&(p[1].activeCreature != i)
-                              &&(!he->gaveBirth) && (he->radius > 15.5f)
-                              &&(he->race == c->race))
-        {
-            Creatures.makeChild(he);
-        }
+        Creatures.nextActive(p[1].activeCreature, p[1].activeCreature);
     }
-
+   
 }
 //------------------------
 void Singleton::drawSelectRace(){
