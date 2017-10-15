@@ -13,11 +13,11 @@ data/pics/creature3.tga
 data/pics/creature4.tga
 32 32 1
 data/pics/arieswin.tga
-155 108 1
+180 128 1
 data/pics/pinguwin.tga
-97 57 1
+180 128 1
 data/pics/snake.tga
-128 128 1
+180 128 1
 data/pics/sharkwin.tga
 176 128 1
 data/pics/background.tga

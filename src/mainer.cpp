@@ -141,6 +141,7 @@ void checkKeys(){
     if ( keys[SDLK_d] )     Game->Keys[3] = 1;
     if ( keys[SDLK_SPACE])  Game->Keys[6] = 1;
     if ( keys[SDLK_e])      Game->Keys[5] = 1;
+    if ( keys[SDLK_q])      Game->Keys[13] = 1;
 
     //P I
     if ( keys[SDLK_UP] )    Game->Keys[8] = 1;
@@ -149,6 +150,7 @@ void checkKeys(){
     if ( keys[SDLK_RIGHT])  Game->Keys[11] = 1;
     if ( keys[SDLK_RSHIFT]) Game->Keys[7] = 1;
     if ( keys[SDLK_RETURN]) Game->Keys[4] = 1;
+    if ( keys[SDLK_BACKSPACE]) Game->Keys[14] = 1;
 
 
     if ( keys[SDLK_ESCAPE])  Game->Keys[12] = 1;

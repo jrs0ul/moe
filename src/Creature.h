@@ -39,6 +39,7 @@ public:
 
     void draw(PicsContainer& pics);
     void AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map);
+    void terraform(LevelMap& map);
     void animate();
 
     void makePenguin();

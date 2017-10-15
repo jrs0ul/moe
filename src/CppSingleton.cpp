@@ -288,6 +288,11 @@ void Singleton::gameLogic(){
             Creatures.procreate(p[0].activeCreature);
         }
 
+        if ((OldKeys[14]) && (!Keys[14]))
+        {
+            c->terraform(Mapas);
+        }
+
         
         if (gamemode == TWO){
             c = Creatures.get(p[1].activeCreature);
@@ -308,6 +313,12 @@ void Singleton::gameLogic(){
             {
                 Creatures.procreate(p[1].activeCreature);
             }
+
+            if ((OldKeys[13]) && (!Keys[13]))
+            {
+                c->terraform(Mapas);
+            }
+
 
         }
         else
@@ -551,7 +562,7 @@ void Singleton::DrawVictoryDialog()
                    }break;
             case 5:{ 
                         iRaceNameIndex = 2;
-                        pics.draw(10, 360, 145, 0, false);
+                        pics.draw(10, 125, 145, 0, false);
                     }break;
             case 6:{
                         iRaceNameIndex = 3;
@@ -561,7 +572,7 @@ void Singleton::DrawVictoryDialog()
 
         char finalBuff[255];
         sprintf(finalBuff, "%s have won!", RaceNames[iRaceNameIndex]);
-        WriteShadedText(320 - (strlen(finalBuff)*14)/2, 230, pics, 0, finalBuff);
+        WriteShadedText(300, 260, pics, 0, finalBuff);
 
     }
     else

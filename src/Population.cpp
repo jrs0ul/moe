@@ -80,9 +80,30 @@ void Population::makeChild(Creature * parent){
 }
 //---------------------------
 void Population::draw(PicsContainer& pics){
-    for (unsigned i = 0; i < creatures.count(); i++){
-        creatures[i].draw(pics);
+
+    DArray<Creature*> controledOnes;
+
+    for (unsigned i = 0; i < creatures.count(); i++)
+    {
+        if (creatures[i].controled)
+        {
+            controledOnes.add(&creatures[i]);
+        }
+        else
+        {
+            creatures[i].draw(pics);
+        }
     }
+
+    if (controledOnes.count())
+    {
+        for (unsigned i = 0; i < controledOnes.count(); ++i)
+        {
+            controledOnes[i]->draw(pics);
+        }
+    }
+
+    controledOnes.destroy();
 
 }
 

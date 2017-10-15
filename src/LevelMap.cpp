@@ -234,6 +234,29 @@ int LevelMap::getTerrainType(unsigned x, unsigned y) const
     return -1;
 
 }
+
+void LevelMap::setTerrainType(unsigned x, unsigned y, TerrainTypes t)
+{
+    if ((x >= width) || (y >= height))
+    {
+        return;
+    }
+
+    map[y][x].animated = false;
+    map[y][x].frame = 0;
+
+    switch (t)
+    {
+        case ET_GROUND: map[y][x].picture = 0; break;
+        case ET_GRASS:  map[y][x].picture = 1; break;
+        case ET_WATER:  map[y][x].picture = 2; map[y][x].animated = true; break;
+        case ET_ICE:    map[y][x].picture = 6; break;
+        case ET_LAVA:   map[y][x].picture = 7; map[y][x].animated = true; break;
+        case ET_COUNT: break;
+    }
+
+
+}
 //-----------------------
 void LevelMap::setTile(unsigned x, unsigned y, Tile & t){
 
@@ -248,7 +271,8 @@ void LevelMap::animateTiles(){
     
     for (unsigned i = 0; i < height; i++){
         for (unsigned a = 0; a < width; a++){
-            if (map[i][a].animated){
+            if (map[i][a].animated)
+            {
                 map[i][a].animtics++;
                 if (map[i][a].animtics > 15){
                     map[i][a].animtics = 0;

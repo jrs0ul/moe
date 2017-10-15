@@ -184,3 +184,34 @@ void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
         }
     }
 }
+
+void Creature::terraform(LevelMap& map)
+{
+    unsigned mapX = (pos.v[0]) / 32;
+    unsigned mapY = (pos.v[1]) / 32;
+
+
+    int iTerrain = map.getTerrainType(mapX, mapY);
+
+    if (iTerrain != -1)
+    {
+
+        int iVal = -10;
+        int iIndex = -1;
+        for (int i = 0; i < ET_COUNT; ++i)
+        {
+            if (iTerrainBonuses[i] > iVal)
+            {
+                iVal = iTerrainBonuses[i];
+                iIndex = i;
+            }
+        }
+        
+
+        if (iIndex > -1)
+        {
+            map.setTerrainType(mapX, mapY, (TerrainTypes)iIndex);
+        }
+    }
+
+}

@@ -47,6 +47,7 @@ struct LevelMap{
               float c = 1.0f, int screenWidth = 480,
               int screenHeight = 320);
     int  getTerrainType(unsigned x, unsigned y) const;
+    void setTerrainType(unsigned x, unsigned y, TerrainTypes t);
     void setTile(unsigned x, unsigned y, Tile & t);
     void animateTiles();
     void affectTile(unsigned x, unsigned y);
