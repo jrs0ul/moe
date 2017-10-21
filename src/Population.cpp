@@ -2,14 +2,16 @@
 #include "externals.h"
 #include "Utils.h"
 
-Creature * Population::get(unsigned index){
+Creature * Population::get(unsigned index)
+{
     if (index < creatures.count())
         return &creatures[index];
 
     return 0;
 }
 
-void Population::nextActive(unsigned &Active, unsigned index){
+void Population::nextActive(unsigned &Active, unsigned index)
+{
     
     DArray<unsigned> tmp;
 
@@ -48,7 +50,8 @@ void Population::nextActive(unsigned &Active, unsigned index){
     tmp.destroy();
 }
 //------------------------
-void Population::makeChild(Creature * parent){
+void Population::makeChild(Creature * parent)
+{
 
     Creature child;
     parent->gaveBirth = true;
@@ -108,28 +111,36 @@ void Population::draw(PicsContainer& pics){
 }
 
 
-void Population::procreate(unsigned procreator)
+void Population::interact(unsigned interactor)
 {
 
-    Creature* c = get(procreator);
+    Creature* c = get(interactor);
 
     for (unsigned i = 0; i < count(); ++i)
     {
-        Creature * he = get(i);
+        Creature * other = get(i);
 
         bool bColides = CirclesColide(c->pos.v[0],
                             c->pos.v[1],
                             c->radius,
-                            he->pos.v[0],
-                            he->pos.v[1],
-                            he->radius);
+                            other->pos.v[0],
+                            other->pos.v[1],
+                            other->radius);
 
-        if ((bColides) && (procreator != i)
-            &&(!he->gaveBirth) && (he->radius > 15.5f)
-            &&(he->race == c->race) && (c->procreationCount < c->maxProcreationCount))
+        if ((!bColides) || (interactor == i) || (other->dead))
+        {
+            continue;
+        }
+
+        if ((!other->gaveBirth) && (other->radius > 15.5f)
+            &&(other->race == c->race) && (c->procreationCount < c->maxProcreationCount))
         {
             c->procreationCount++;
-            makeChild(he);
+            makeChild(other);
+        }
+        else if (other->race != c->race)
+        {
+            c->fight(*other);
         }
     }
 

@@ -172,7 +172,10 @@ void checkKeys(){
             Game->Keys[7] = 1;
         if (SDL_JoystickGetButton (Joy, 2))
             Game->Keys[12] = 1;
+        if (SDL_JoystickGetButton (Joy, 3))
+            Game->Keys[14] = 1;
     }
+
 }
 
 

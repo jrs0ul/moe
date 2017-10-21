@@ -14,6 +14,7 @@ public:
     Creature(){
         movetics = 0;
         hp = 50;
+        attack = 2;
         radius = 16;
         frame = 0;
         animtics = 0;
@@ -39,6 +40,7 @@ public:
 
     void draw(PicsContainer& pics);
     void AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map);
+    void fight(Creature& other);
     void terraform(LevelMap& map);
     void animate();
 
@@ -56,6 +58,7 @@ public:
     Vector3D dir;
     float radius;
     int hp;
+    int attack;
    
     int movetics;
 

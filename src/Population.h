@@ -15,7 +15,7 @@ public:
 
     void nextActive(unsigned &Active, unsigned index);
     void draw(PicsContainer& pics);
-    void procreate(unsigned procreator);
+    void interact(unsigned interactor);
     void groundEffect(unsigned i, LevelMap& map);
     int  countByRace(unsigned race);
     void create(unsigned race1, unsigned race2);

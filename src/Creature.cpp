@@ -46,7 +46,8 @@ void  Creature::makePenguin(){
 
     race = 2;
     mask = 14;
-    hp = 85; 
+    hp = 85;
+    attack = 10;
     maxProcreationCount = 3;
 }
 //-----------------------------
@@ -61,6 +62,7 @@ void Creature::makeGoat()
     race = 3;
     mask = 15;
     hp = 65;
+    attack = 20;
     maxProcreationCount = 6;
 }
 //-----------------------------
@@ -75,6 +77,7 @@ void Creature::makeSnake(){
     race = 6;
     mask = 17;
     hp = 75;
+    attack = 15;
     maxProcreationCount = 2;
 }
 //-----------------------------
@@ -89,6 +92,7 @@ void Creature::makeShark(){
     race = 5;
     mask = 16;
     hp = 55;
+    attack = 25;
     maxProcreationCount = 4;
 }
 
@@ -183,6 +187,12 @@ void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
             
         }
     }
+}
+
+void Creature::fight(Creature& other)
+{
+    other.hp -= (rand() % (attack / 2)) + attack / 2;
+    hp -= rand() % other.attack / 4;
 }
 
 void Creature::terraform(LevelMap& map)

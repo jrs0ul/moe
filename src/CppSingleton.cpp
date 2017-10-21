@@ -285,7 +285,7 @@ void Singleton::gameLogic(){
 
         if ((OldKeys[4]) && (!Keys[4]))
         {
-            Creatures.procreate(p[0].activeCreature);
+            Creatures.interact(p[0].activeCreature);
         }
 
         if ((OldKeys[14]) && (!Keys[14]))
@@ -311,7 +311,7 @@ void Singleton::gameLogic(){
 
             if ((OldKeys[5]) && (!Keys[5]))
             {
-                Creatures.procreate(p[1].activeCreature);
+                Creatures.interact(p[1].activeCreature);
             }
 
             if ((OldKeys[13]) && (!Keys[13]))
@@ -482,7 +482,7 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
 
     }
 
-    Creatures.procreate(p[1].activeCreature);
+    Creatures.interact(p[1].activeCreature);
 
     if (c->procreationCount >= c->maxProcreationCount)
     {
