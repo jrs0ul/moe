@@ -3,36 +3,35 @@
 
 
 void Creature::draw(PicsContainer& pics){
-    if (!dead){
 
-        const COLOR c = ((gaveBirth)? COLOR(0.5,0.5,1) : COLOR(1,1,1)) ;
-        const COLOR procreationColor = (controled)? COLOR(0, 0, 1, 0.8) : COLOR(0,0,0.6f, 0.5f);
+    const COLOR c = ((gaveBirth)? COLOR(0.5,0.5, 1.f, 1.f - deathProgress) : COLOR(1.f, 1.f, 1.f, 1.f - deathProgress)) ;
+    const COLOR procreationColor = (controled)? COLOR(0, 0, 1, 0.8) : COLOR(0,0,0.6f, 0.5f);
 
-        if (controled)
-        {
-            float fScale = radius / kfMaxRadius + 0.5f * pulsationProgress;
-            pics.draw(mask, pos.v[0], pos.v[1], frame, true, 
-                      fScale, fScale, 0);
-        }
-
-
-        pics.draw(race, pos.v[0], pos.v[1], frame, true, 
-                  radius / kfMaxRadius, radius / kfMaxRadius, 0,
-                  c, c);
-
-        unsigned trace = 0;
-        switch (race){
-            case 3: trace = 0; break;
-            case 2: trace = 1; break;
-            case 5: trace = 2; break;
-            case 6: trace = 3; break;
-        }
-
-        drawStatusBar(pics, pos.v[0]-15, pos.v[1]-22, hp, MaxHps[trace], COLOR(0.6f, 0.f, 0.f, 0.5f));
-        drawStatusBar(pics, pos.v[0]-15, pos.v[1]-30, 
-                      maxProcreationCount - procreationCount, maxProcreationCount, procreationColor);
-
+    if ((controled) && (!dead))
+    {
+        float fScale = radius / kfMaxRadius + 0.5f * pulsationProgress;
+        pics.draw(mask, pos.v[0], pos.v[1], frame, true, fScale, fScale, 0);
     }
+
+
+    pics.draw(race, pos.v[0], pos.v[1], (dead) ? 2 : frame, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
+
+    if (dead)
+    {
+        return;
+    }
+
+    unsigned trace = 0;
+    switch (race){
+        case 3: trace = 0; break;
+        case 2: trace = 1; break;
+        case 5: trace = 2; break;
+        case 6: trace = 3; break;
+    }
+
+    drawStatusBar(pics, pos.v[0]-15, pos.v[1]-22, hp, MaxHps[trace], COLOR(0.6f, 0.f, 0.f, 0.5f));
+    drawStatusBar(pics, pos.v[0]-15, pos.v[1]-30, 
+                  maxProcreationCount - procreationCount, maxProcreationCount, procreationColor);
 
 }
 //-----------------------------
@@ -120,6 +119,16 @@ void Creature::animate(){
 void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
 {
 
+    if (dead)
+    {
+        if (deathProgress < 1.f)
+        {
+            deathProgress += 0.005f;
+        }
+
+        return;
+    }
+
     if (controled)
     {
         pulsationProgress += (0.1f * pulseMultiplier);
@@ -182,7 +191,7 @@ void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
             
             if (iTerrainBonuses[iTerrain] >= 0)
             {
-                    movetics = 0;
+                movetics = 0;
             }
             
         }

@@ -190,7 +190,6 @@ void Singleton::gameLogic(){
 
         c->animate();
 
-        //if (i == 0){
         if (!showWinner)
         {
             Creatures.groundEffect(i, Mapas);
@@ -357,7 +356,6 @@ void Singleton::resetGame(){
     p[1].raceSelected = false;
 
     draw = false;
-    Creatures.destroy();
     showWinner = false;
     winnerRace = 0;
 

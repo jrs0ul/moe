@@ -22,6 +22,7 @@ public:
         controled = false;
         damageTics = 0;
         dead = false;
+        deathProgress = 0.f;
         gaveBirth = false;
         procreationCount = 0;
         maxProcreationCount = 1;
@@ -75,6 +76,7 @@ public:
 
 
     bool dead;
+    float deathProgress;
     bool gaveBirth;
 
     bool haveDir;
