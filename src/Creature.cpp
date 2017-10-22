@@ -116,14 +116,14 @@ void Creature::animate(){
     }
 }
 
-void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
+void Creature::AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
 {
 
     if (dead)
     {
         if (deathProgress < 1.f)
         {
-            deathProgress += 0.005f;
+            deathProgress += fDeltaTime * 0.294f;
         }
 
         return;
@@ -131,7 +131,7 @@ void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
 
     if (controled)
     {
-        pulsationProgress += (0.1f * pulseMultiplier);
+        pulsationProgress += (fDeltaTime * 0.5882f * pulseMultiplier);
 
         if (pulsationProgress > 1.f)
         {
@@ -154,7 +154,7 @@ void Creature::AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
     {
         if (movetics < 50)
         {
-            movetics++;
+            movetics += fDeltaTime * 59.f;
 
             Vector3D posOld = pos;
             pos = pos + Vector3D(dir.v[0] * speed, dir.v[1] * speed, 0);

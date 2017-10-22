@@ -70,6 +70,10 @@ private:
         p[0].activeCreature = 0;
         p[1].activeCreature = 5;
 
+        Accumulator = 0;
+        DT = 1000.0f/60.0f/1000.0f;
+
+
 
         secondsUntilImpact = timeUntilImpact;
 
@@ -86,6 +90,8 @@ private:
 
         OnePlayer_button.set(470, 400, 128, 32);
         TwoPlayer_button.set(470, 440, 128, 32);
+
+        drawDebugStuff = false;
 
     }
 
@@ -111,6 +117,8 @@ private:
 
     void resetGame();
 
+    int FPS();
+
 public:
     bool Exit;
     
@@ -120,11 +128,17 @@ public:
     bool PlayNewSong;
     bool StopMusic;
 
+    float DeltaTime;
+    long TimeTicks;
+    float Accumulator;
+    float DT;
+
 
     SoundSystem ss;
     OggStream music;
     
     PicsContainer pics;
+
 
     time_t start;
     double diffas;
@@ -170,6 +184,8 @@ public:
     bool winnerClick;
     bool joyPressed;
     unsigned globalKEY;
+
+    bool drawDebugStuff;
 
 private:
     static Singleton* m_Instance;

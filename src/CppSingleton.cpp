@@ -185,7 +185,7 @@ void Singleton::gameLogic(){
 
         if (!startImpact)
         {
-            c->AI(kiScreenWidth, kiScreenHeight, Mapas);
+            c->AI(DeltaTime, kiScreenWidth, kiScreenHeight, Mapas);
         }
 
         c->animate();
@@ -347,6 +347,17 @@ void Singleton::render(){
         case SELECTRACE: drawSelectRace(); break;
         case TITLE: drawMainMenu(); break;
     }
+
+    if (drawDebugStuff)
+    {
+        char buf[50];
+        sprintf(buf, "FPS: %d", FPS());
+        WriteText(0, kiScreenHeight - 20, pics, 0, buf);
+        sprintf(buf, "DeltaTime: %f", DeltaTime);
+        WriteText(0, kiScreenHeight - 40, pics, 0, buf);
+        pics.drawBatch(666);
+    }
+
 }
 //---------------------
 void Singleton::resetGame(){
@@ -663,4 +674,17 @@ void Singleton::destroy(){
 
     ss.exit();
     pics.destroy();
+}
+
+int Singleton::FPS()
+{
+
+    static int ctime = 0, FPS = 0, frames = 0, frames0 = 0;
+    if ((int)TimeTicks >= ctime) {
+        FPS = frames - frames0;
+        ctime = (int)TimeTicks + 1000;
+        frames0 = frames;
+    }
+    frames = frames+1;
+    return FPS;
 }

@@ -40,7 +40,7 @@ public:
     }
 
     void draw(PicsContainer& pics);
-    void AI(int iMaxAreaX, int iMaxAreaY, const LevelMap& map);
+    void AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap& map);
     void fight(Creature& other);
     void terraform(LevelMap& map);
     void animate();
@@ -58,9 +58,14 @@ public:
     Vector3D pos;
     Vector3D dir;
     float radius;
+
+    float deathProgress;
+    float pulsationProgress;
+    float pulseMultiplier;
+    float procreationprogress;
+
     int hp;
     int attack;
-   
     int movetics;
 
     int iTerrainBonuses[ET_COUNT];
@@ -76,13 +81,11 @@ public:
 
 
     bool dead;
-    float deathProgress;
     bool gaveBirth;
 
     bool haveDir;
     bool controled;
-    float pulsationProgress;
-    float pulseMultiplier;
+    bool procreating;
 };
 
 
