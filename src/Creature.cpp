@@ -29,9 +29,12 @@ void Creature::draw(PicsContainer& pics){
         case 6: trace = 3; break;
     }
 
+
     drawStatusBar(pics, pos.v[0]-15, pos.v[1]-22, hp, MaxHps[trace], COLOR(0.6f, 0.f, 0.f, 0.5f));
     drawStatusBar(pics, pos.v[0]-15, pos.v[1]-30, 
                   maxProcreationCount - procreationCount, maxProcreationCount, procreationColor);
+
+    pics.draw(19, pos.v[0] - 15, pos.v[1] - 30, (isFemale)? 1 : 0);
 
 }
 //-----------------------------
@@ -95,6 +98,16 @@ void Creature::makeShark(){
     maxProcreationCount = 4;
 }
 
+bool Creature::canProcreateWith(Creature* other) const
+{
+
+    return (((isFemale == false) && (procreationCount < maxProcreationCount) &&
+            (other->isFemale == true) && (!other->gaveBirth)) ||
+            ((isFemale == true) && (!gaveBirth) &&
+            (other->isFemale == false)&&(other->procreationCount < other->maxProcreationCount)));
+
+}
+
 void Creature::drawStatusBar(PicsContainer& pics, 
                              float x, float y, float current, float max, const COLOR& c)
 {
@@ -126,6 +139,21 @@ void Creature::AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap
             deathProgress += fDeltaTime * 0.294f;
         }
 
+        return;
+    }
+
+    if (procreating == true)
+    {
+        procreationProgress += fDeltaTime * 0.5f;
+        if (procreationProgress > 1.f)
+        {
+            procreationProgress = 0.f;
+            procreating = false;
+            if (isFemale)
+            {
+                givesBirth = true;
+            }
+        }
         return;
     }
 

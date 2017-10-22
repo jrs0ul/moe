@@ -96,6 +96,13 @@ void Singleton::init(int width, int height){
 void Singleton::drawGame(){
 
     Mapas.draw(pics, 1, 0, 0, 1.0f, kiScreenWidth, kiScreenHeight);
+
+
+    for (unsigned i = 0; i < m_PowerUps.count(); ++i)
+    {
+        m_PowerUps[i].Render(pics, 20);
+    }
+
     Creatures.draw(pics);
 
     if ((launchFireBall)&&(!startImpact))
@@ -104,9 +111,11 @@ void Singleton::drawGame(){
     }
 
     char buf[50];
-    int timeleft =  secondsUntilImpact - diffas;
+    int timeleft =  secondsUntilImpact - m_timeDiff;
     if (timeleft <= 0)
+    {
         timeleft = 0;
+    }
     pics.draw(-1, 100,0,0, false,440,40,0, COLOR(0.4,0.4,0.4,0.8), COLOR(0.4, 0.4, 0.4, 0.8));
     sprintf(buf,"Time left until impact: %d", timeleft);
     WriteShadedText(320-strlen(buf)*13/2, 10, pics, 0, buf);
@@ -179,39 +188,12 @@ void Singleton::gameLogic(){
 
     Mapas.animateTiles();
 
-    for (unsigned i = 0; i < Creatures.count(); ++i)
-    {
-        Creature * c = Creatures.get(i);
+    Creatures.Update(DeltaTime,
+                     Mapas,
+                     kiScreenWidth, kiScreenHeight,
+                     p[0].activeCreature, p[1].activeCreature,
+                     startImpact, showWinner);
 
-        if (!startImpact)
-        {
-            c->AI(DeltaTime, kiScreenWidth, kiScreenHeight, Mapas);
-        }
-
-        c->animate();
-
-        if (!showWinner)
-        {
-            Creatures.groundEffect(i, Mapas);
-
-            if (c->hp <= 0){
-                c->dead = true;
-                
-                if (i == p[0].activeCreature)
-                {
-                    Creatures.nextActive(p[0].activeCreature, i);
-                }
-
-                if (i == p[1].activeCreature)
-                {
-                    Creatures.nextActive(p[1].activeCreature, i);
-                }
-            }
-            //----------------------
-        }
-    }
-
-  
     if (launchFireBall)
     {
         m_Meteor.AnimateFireBall();
@@ -221,11 +203,24 @@ void Singleton::gameLogic(){
     
     time_t now;
     time(&now);
-    diffas = difftime(now, start);
+    m_timeDiff = difftime(now, start);
 
     if (startImpact)
     {
         Impact();
+    }
+
+    if ((m_timeDiff - m_timeDiffOld > 2)&&(!startImpact))
+    {
+        
+        m_timeDiffOld = m_timeDiff;
+        printf("Spawning powerup %d %d\n", rand()%Mapas.width, rand()%Mapas.height);
+        PowerUp newP;
+        newP.pos = Vector3D((rand()%Mapas.width)*32.f, (rand()%Mapas.height)*32.f, 0.f);
+        newP.type = rand()%PT_COUNT;
+        newP.radius = 16.f;
+        m_PowerUps.add(newP);
+
     }
 
 
@@ -237,10 +232,13 @@ void Singleton::gameLogic(){
         }
     }
 
-    if (secondsUntilImpact == (int)diffas){
+    if (secondsUntilImpact == (int)m_timeDiff){
         if(!showWinner)
+        {
             launchFireBall = true;
+        }
     }
+
 
     
     if ((OldKeys[7])&&(!Keys[7])){
@@ -269,55 +267,74 @@ void Singleton::gameLogic(){
         const float speed = 2.f;
         Creature* c = 0;
         c = Creatures.get(p[0].activeCreature);
-        if (Keys[8])
-            if (c->pos.v[1] > c->radius)
-                c->pos.v[1] -= speed;
-        if (Keys[9])
-            if (c->pos.v[1] < kiScreenHeight - c->radius)
-                c->pos.v[1] += speed;
-        if (Keys[10])
-            if (c->pos.v[0] > c->radius)
-                c->pos.v[0] -= speed;
-        if (Keys[11])
-            if (c->pos.v[0] < kiScreenWidth - c->radius)
-                c->pos.v[0] += speed;
-
-        if ((OldKeys[4]) && (!Keys[4]))
+        if (c->procreating == false)
         {
-            Creatures.interact(p[0].activeCreature);
-        }
-
-        if ((OldKeys[14]) && (!Keys[14]))
-        {
-            c->terraform(Mapas);
-        }
-
-        
-        if (gamemode == TWO){
-            c = Creatures.get(p[1].activeCreature);
-            if (Keys[0])
+            if (Keys[8])
+            {
                 if (c->pos.v[1] > c->radius)
-                c->pos.v[1] -= speed;
-            if (Keys[1])
+                    c->pos.v[1] -= speed;
+            }
+            if (Keys[9]){
                 if (c->pos.v[1] < kiScreenHeight - c->radius)
                     c->pos.v[1] += speed;
-            if (Keys[2])
+            }
+            if (Keys[10]){
                 if (c->pos.v[0] > c->radius)
                     c->pos.v[0] -= speed;
-            if (Keys[3])
+            }
+            if (Keys[11])
+            {
                 if (c->pos.v[0] < kiScreenWidth - c->radius)
                     c->pos.v[0] += speed;
-
-            if ((OldKeys[5]) && (!Keys[5]))
-            {
-                Creatures.interact(p[1].activeCreature);
             }
 
-            if ((OldKeys[13]) && (!Keys[13]))
+            if ((OldKeys[4]) && (!Keys[4]))
+            {
+                Creatures.interact(p[0].activeCreature);
+                if (c->procreating)
+                {
+                    Creatures.nextActive(p[0].activeCreature, p[0].activeCreature);
+                }
+
+            }
+
+            if ((OldKeys[14]) && (!Keys[14]))
             {
                 c->terraform(Mapas);
             }
+        }
+        
+        if (gamemode == TWO){
+            c = Creatures.get(p[1].activeCreature);
+            if (c->procreating == false)
+            {
+                if (Keys[0])
+                    if (c->pos.v[1] > c->radius)
+                    c->pos.v[1] -= speed;
+                if (Keys[1])
+                    if (c->pos.v[1] < kiScreenHeight - c->radius)
+                        c->pos.v[1] += speed;
+                if (Keys[2])
+                    if (c->pos.v[0] > c->radius)
+                        c->pos.v[0] -= speed;
+                if (Keys[3])
+                    if (c->pos.v[0] < kiScreenWidth - c->radius)
+                        c->pos.v[0] += speed;
 
+                if ((OldKeys[5]) && (!Keys[5]))
+                {
+                    Creatures.interact(p[1].activeCreature);
+                    if (c->procreating)
+                    {
+                        Creatures.nextActive(p[1].activeCreature, p[1].activeCreature);
+                    }
+                }
+
+                if ((OldKeys[13]) && (!Keys[13]))
+                {
+                    c->terraform(Mapas);
+                }
+            }
 
         }
         else
@@ -371,6 +388,7 @@ void Singleton::resetGame(){
     winnerRace = 0;
 
     m_Meteor.Destroy();
+    m_PowerUps.destroy();
 
     Creatures.destroy();
     Mapas.generate(MaxMapWidth, MaxMapHeight);
@@ -460,24 +478,31 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
         {
             Creature * mate = Creatures.get(i);
 
-            if ((!mate->gaveBirth) && (!mate->dead) 
-                && (mate->race == c->race)&&(p[1].activeCreature != i)&& (mate->radius > 15.5f))
+            const bool bCanProcreate = c->canProcreateWith(mate);
+
+            if ((bCanProcreate) && (!mate->dead) &&
+                (mate->race == c->race) && (p[1].activeCreature != i) && (mate->radius > 15.5f))
             {
                 mate->pos.v[2] = 0;
                 c->pos.v[2] = 0;
                 Vector3D d = mate->pos - c->pos;
                 float len = d.length();
+
                 if (len < shortestDistance)
                 {
                     shortestDistance = len;
                     dir = d;
                 }
+
+                c->haveDir = true;
             }
         }
 
-        dir.normalize();
-        c->dir = dir;
-        c->haveDir = true;
+        if (c->haveDir)
+        {
+            dir.normalize();
+            c->dir = dir;
+        }
     }
     else
     {
@@ -493,10 +518,11 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
 
     Creatures.interact(p[1].activeCreature);
 
-    if (c->procreationCount >= c->maxProcreationCount)
+    if ((c->procreationCount >= c->maxProcreationCount) || (c->gaveBirth))
     {
         Creatures.nextActive(p[1].activeCreature, p[1].activeCreature);
     }
+
    
 }
 //------------------------

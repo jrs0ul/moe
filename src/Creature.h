@@ -11,11 +11,19 @@ const float kfGrowthIncrease = 0.09f;
 
 class Creature{
 public:
-    Creature(){
+    Creature()
+    : pos(0.f, 0.f, 0.f)
+    , dir(0.f, 0.f, 0.f)
+    , radius(16.f)
+    //...
+    , procreationProgress(0.f)
+    //...
+    , procreating(false)
+    , givesBirth(false)
+    {
         movetics = 0;
         hp = 50;
         attack = 2;
-        radius = 16;
         frame = 0;
         animtics = 0;
         mask = 0;
@@ -28,12 +36,13 @@ public:
         maxProcreationCount = 1;
 
         haveDir = false;
-        dir = Vector3D(0.f, 0.f, 0.f);
 
         for (int i = 0; i < ET_COUNT; ++i)
         {
             iTerrainBonuses[i] = 0;
         }
+
+        isFemale = rand()%2 ? false : true;
 
         pulsationProgress = 0.1f;
         pulseMultiplier = 1.f;
@@ -50,6 +59,8 @@ public:
     void makeSnake();
     void makeShark();
 
+    bool canProcreateWith(Creature* other) const;
+
 private:
     void drawStatusBar(PicsContainer& pics, float x, float y, float current, float max, const COLOR& c);
 
@@ -62,7 +73,7 @@ public:
     float deathProgress;
     float pulsationProgress;
     float pulseMultiplier;
-    float procreationprogress;
+    float procreationProgress;
 
     int hp;
     int attack;
@@ -86,6 +97,8 @@ public:
     bool haveDir;
     bool controled;
     bool procreating;
+    bool givesBirth;
+    bool isFemale;
 };
 
 

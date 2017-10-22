@@ -15,6 +15,7 @@
 #include "Population.h"
 #include "Player.h"
 #include "Meteor.h"
+#include "PowerUp.h"
 
 enum GameStates {
     GAME,
@@ -141,7 +142,8 @@ public:
 
 
     time_t start;
-    double diffas;
+    double m_timeDiff;
+    double m_timeDiffOld;
     bool launchFireBall;
     int secondsUntilImpact;
     bool startImpact;
@@ -190,6 +192,7 @@ public:
 private:
     static Singleton* m_Instance;
     Meteor            m_Meteor;
+    DArray<PowerUp>   m_PowerUps;
 };
 
 #endif //_CPP_SINGLETON

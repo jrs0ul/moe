@@ -36,3 +36,7 @@ data/pics/creature4mask.tga
 32 32 1
 data/pics/menu.tga
 32 128 1
+data/pics/genders.tga
+16 16 1
+data/pics/powerups.tga
+32 32 1

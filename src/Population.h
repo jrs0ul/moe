@@ -9,6 +9,10 @@ class Population{
 
 public:
 
+    void Update(float fDeltaTime, LevelMap& Mapas,
+                int iScreenWidth, int iScreenHeight,
+                unsigned& Player1ActiveCreature, unsigned& Player2ActiveCreature,
+                bool startImpact, bool showWinner);
     Creature * get(unsigned index);
     unsigned long count(){return creatures.count();}
     void destroy(){creatures.destroy();}

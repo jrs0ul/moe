@@ -2,6 +2,52 @@
 #include "externals.h"
 #include "Utils.h"
 
+
+void Population::Update(float fDeltaTime, LevelMap& Mapas, 
+                        int iScreenWidth, int iScreenHeight, 
+                        unsigned& Player1ActiveCreature, unsigned& Player2ActiveCreature,
+                        bool startImpact, bool showWinner)
+{
+    for (unsigned i = 0; i < count(); ++i)
+    {
+        Creature * c = get(i);
+
+        if (!startImpact)
+        {
+            c->AI(fDeltaTime, iScreenWidth, iScreenHeight, Mapas);
+        }
+
+        c->animate();
+
+        if (c->givesBirth == true)
+        {
+            makeChild(c);
+            c->givesBirth = false;
+        }
+
+        if (!showWinner)
+        {
+            groundEffect(i, Mapas);
+
+            if (c->hp <= 0){
+                c->dead = true;
+                
+                if (i == Player1ActiveCreature)
+                {
+                    nextActive(Player1ActiveCreature, i);
+                }
+
+                if (i == Player2ActiveCreature)
+                {
+                    nextActive(Player2ActiveCreature, i);
+                }
+            }
+            //----------------------
+        }
+    }
+
+}
+
 Creature * Population::get(unsigned index)
 {
     if (index < creatures.count())
@@ -58,10 +104,7 @@ void Population::makeChild(Creature * parent)
     child.pos = parent->pos;
     child.race = parent->race;
     child.mask = parent->mask;
-    child.dir = Vector3D(0,0,0);
     child.radius = 8;
-    child.pulsationProgress = 0.f;
-    child.pulseMultiplier = 1.f;
 
     unsigned trace = 0;
     switch (parent->race){
@@ -132,11 +175,22 @@ void Population::interact(unsigned interactor)
             continue;
         }
 
-        if ((!other->gaveBirth) && (other->radius > 15.5f)
-            &&(other->race == c->race) && (c->procreationCount < c->maxProcreationCount))
+
+        const bool bCanProcreate = c->canProcreateWith(other);
+
+
+        if ((bCanProcreate) && (other->radius > 15.5f) && (c->radius > 15.5f)
+            &&(other->race == c->race) 
+            &&(other->procreating == false) && (c->procreating == false))
         {
-            c->procreationCount++;
-            makeChild(other);
+            if (c->isFemale == false)
+            {
+                c->procreationCount++;
+            }
+            c->procreating = true;
+            other->procreating = true;
+            other->procreationProgress = 0.f;
+            c->procreationProgress = 0.f;
         }
         else if (other->race != c->race)
         {
