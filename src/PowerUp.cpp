@@ -4,7 +4,9 @@ void PowerUp::Render(PicsContainer& pics, unsigned pic)
 {
     float fScale = ((bGrow) ? fAnimationProgress : 1 - fAnimationProgress) * 0.25f;
 
-    pics.draw(pic, pos.v[0], pos.v[1], type, true, 1.f + fScale, 1.f + fScale);
+    COLOR c = COLOR(1.f, 1.f, 1.f, 1 - lifeTime);
+
+    pics.draw(pic, pos.v[0], pos.v[1], type, true, 1.f + fScale, 1.f + fScale, 0.f, c, c);
 }
 
 void PowerUp::Update(float fDeltaTime)
@@ -15,6 +17,13 @@ void PowerUp::Update(float fDeltaTime)
     {
         bGrow = !bGrow;
         fAnimationProgress = 0.f;
+    }
+
+    lifeTime += fDeltaTime * 0.1f;
+
+    if (lifeTime > 1.f)
+    {
+        pickedUp = true;
     }
 }
 

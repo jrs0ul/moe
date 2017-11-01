@@ -24,6 +24,7 @@ public:
     PowerUp()
     : pos(0, 0, 0)
     , radius(1.f)
+    , lifeTime(0.f)
     , type(0)
     , pickedUp(false)
     {}
@@ -33,6 +34,7 @@ public:
 
     Vector3D pos;
     float    radius;
+    float    lifeTime;
     int      type;
     bool     pickedUp;
 private:

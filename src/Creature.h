@@ -42,7 +42,7 @@ public:
             iTerrainBonuses[i] = 0;
         }
 
-        isFemale = rand()%2 ? false : true;
+        isFemale = false;
 
         pulsationProgress = 0.1f;
         pulseMultiplier = 1.f;
@@ -99,6 +99,8 @@ public:
     bool procreating;
     bool givesBirth;
     bool isFemale;
+    bool isWarrior;
+    bool isBuilder;
 };
 
 

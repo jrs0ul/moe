@@ -5,6 +5,7 @@
 
 void Population::Update(float fDeltaTime, LevelMap& Mapas,
                         PowerUpArray& PowerUps,
+                        int& secondsUntilImpact,
                         int iScreenWidth, int iScreenHeight, 
                         unsigned& Player1ActiveCreature, unsigned& Player2ActiveCreature,
                         bool startImpact, bool showWinner)
@@ -44,6 +45,16 @@ void Population::Update(float fDeltaTime, LevelMap& Mapas,
                     if (bColides)
                     {
                         pUp->pickedUp = true;
+
+                        switch (pUp->type)
+                        {
+                            case PT_FEMALE: SpawnAFemale(c->race); break;
+                            case PT_WARRIOR: c->isWarrior = true; break;
+                            case PT_BUILDER: c->isBuilder = true; break;
+                            case PT_TIMEUP: secondsUntilImpact += 5; break;
+                            case PT_TIMEDOWN: secondsUntilImpact -= 1 ; break;
+                            case PT_FERTILITY: Fertilize(c->race); break;
+                        }
                     }
 
                 }
@@ -121,34 +132,6 @@ void Population::nextActive(unsigned &Active, unsigned index)
     tmp.destroy();
 }
 //------------------------
-void Population::makeChild(Creature * parent)
-{
-
-    Creature child;
-    parent->gaveBirth = true;
-    child.pos = parent->pos;
-    child.race = parent->race;
-    child.mask = parent->mask;
-    child.radius = 8;
-
-    unsigned trace = 0;
-    switch (parent->race){
-        case 3: trace = 0; break;
-        case 2: trace = 1; break;
-        case 5: trace = 2; break;
-        case 6: trace = 3; break;
-    }
-
-    for (int i = 0; i < ET_COUNT; ++i)
-    {
-        child.iTerrainBonuses[i] = parent->iTerrainBonuses[i];
-    }
-
-    child.hp = MaxHps[trace]; 
-
-    creatures.add(child);
-
-}
 //---------------------------
 void Population::draw(PicsContainer& pics){
 
@@ -217,7 +200,7 @@ void Population::interact(unsigned interactor)
             other->procreationProgress = 0.f;
             c->procreationProgress = 0.f;
         }
-        else if (other->race != c->race)
+        else if ((other->race != c->race) && (c->isWarrior))
         {
             c->fight(*other);
         }
@@ -301,3 +284,72 @@ void Population::create(unsigned race1, unsigned race2){
     }
 
 }
+
+
+void Population::Fertilize(unsigned race)
+{
+    for (unsigned i = 0; i < creatures.count(); ++i)
+    {
+        Creature* c = &creatures[i];
+
+        if ((race == c->race) && (!c->dead))
+        {
+            if (c->isFemale)
+            {
+                c->gaveBirth = false;
+            }
+            else
+            {
+                c->procreationCount = 0;
+            }
+
+            return;
+        }
+    }
+
+}
+
+void Population::SpawnAFemale(unsigned race)
+{
+    for (unsigned i = 0; i < creatures.count(); ++i)
+    {
+        Creature* c = &creatures[i];
+
+        if ((c->isFemale == false) && (race == c->race) && (!c->dead))
+        {
+            c->isFemale = true;
+            return;
+        }
+    }
+
+}
+
+void Population::makeChild(Creature * parent)
+{
+
+    Creature child;
+    parent->gaveBirth = true;
+    child.pos = parent->pos;
+    child.race = parent->race;
+    child.mask = parent->mask;
+    child.radius = 8;
+
+    unsigned trace = 0;
+    switch (parent->race){
+        case 3: trace = 0; break;
+        case 2: trace = 1; break;
+        case 5: trace = 2; break;
+        case 6: trace = 3; break;
+    }
+
+    for (int i = 0; i < ET_COUNT; ++i)
+    {
+        child.iTerrainBonuses[i] = parent->iTerrainBonuses[i];
+    }
+
+    child.hp = MaxHps[trace]; 
+
+    creatures.add(child);
+
+}
+

@@ -186,6 +186,7 @@ void Singleton::gameLogic(){
     Creatures.Update(DeltaTime,
                      Mapas,
                      m_PowerUps,
+                     secondsUntilImpact,
                      kiScreenWidth, kiScreenHeight,
                      p[0].activeCreature, p[1].activeCreature,
                      startImpact, showWinner);
@@ -215,7 +216,8 @@ void Singleton::gameLogic(){
         m_timeDiffOld = m_timeDiff;
         printf("Spawning powerup %d %d\n", rand()%Mapas.width, rand()%Mapas.height);
         PowerUp newP;
-        newP.pos = Vector3D((rand()%Mapas.width)*32.f, (rand()%Mapas.height)*32.f, 0.f);
+        newP.pos = Vector3D((rand()%Mapas.width)*32.f + 16.f, 
+                            (rand()%Mapas.height)*32.f + 16.f, 0.f);
         newP.type = rand()%PT_COUNT;
         newP.radius = 16.f;
         m_PowerUps.m_PowerUps.add(newP);

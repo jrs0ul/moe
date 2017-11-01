@@ -13,6 +13,7 @@ public:
     void Update(float fDeltaTime,
                 LevelMap& Mapas,
                 PowerUpArray& PowerUps,
+                int& secondsUntilImpact,
                 int iScreenWidth, int iScreenHeight,
                 unsigned& Player1ActiveCreature,
                 unsigned& Player2ActiveCreature,
@@ -31,7 +32,8 @@ public:
     void create(unsigned race1, unsigned race2);
 
 private:
-
+    void Fertilize(unsigned race);
+    void SpawnAFemale(unsigned race);
     void makeChild(Creature* parent);
 
 private:
