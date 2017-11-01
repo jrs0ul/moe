@@ -29,6 +29,7 @@ public:
     void interact(unsigned interactor);
     void groundEffect(unsigned i, LevelMap& map);
     int  countByRace(unsigned race);
+    int  FemaleCount(unsigned race);
     void create(unsigned race1, unsigned race2);
 
 private:

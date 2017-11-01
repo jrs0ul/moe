@@ -254,6 +254,18 @@ int Population::countByRace(unsigned race){
     }
     return result;
 }
+
+int Population::FemaleCount(unsigned race)
+{
+    int result = 0;
+    for (unsigned i = 0; i < creatures.count(); i++){
+        if ((creatures[i].race == race)&&(!creatures[i].dead) && (creatures[i].isFemale)){
+            result++;
+        }
+    }
+    return result;
+
+}
 //-----------------------------
 void Population::create(unsigned race1, unsigned race2){
     for (unsigned i = 0; i < 10; i++){

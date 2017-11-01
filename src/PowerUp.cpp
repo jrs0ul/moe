@@ -53,3 +53,35 @@ void PowerUpArray::Render(PicsContainer& pics, unsigned uImageIndex)
 
 }
 
+bool PowerUpArray::FindNearestPowerUp(int type, const Vector3D& pos, Vector3D& direction)
+{
+    float shortestDistance = 10000.0f;
+    Vector3D dir = Vector3D(1,0,0);
+
+    bool found = false;
+        
+    for (unsigned i = 0; i < m_PowerUps.count(); i++)
+    {
+        PowerUp* pUp = &m_PowerUps[i];
+
+        if (!pUp->pickedUp && pUp->type == type)
+        {
+            pUp->pos.v[2] = 0;
+            Vector3D d = pUp->pos - pos;
+            const float len = d.length();
+
+            if (len < shortestDistance)
+            {
+                shortestDistance = len;
+                dir = d;
+            }
+
+            found = true;
+        }
+    }
+
+    direction = dir;
+    return found;
+
+}
+

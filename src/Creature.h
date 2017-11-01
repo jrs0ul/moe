@@ -20,6 +20,9 @@ public:
     //...
     , procreating(false)
     , givesBirth(false)
+    , isFemale(false)
+    , isWarrior(false)
+    , isBuilder(false)
     {
         movetics = 0;
         hp = 50;
@@ -41,8 +44,6 @@ public:
         {
             iTerrainBonuses[i] = 0;
         }
-
-        isFemale = false;
 
         pulsationProgress = 0.1f;
         pulseMultiplier = 1.f;

@@ -52,6 +52,7 @@ public:
 
     void Update(float fDeltaTime);
     void Render(PicsContainer& pics, unsigned uImageIndex);
+    bool FindNearestPowerUp(int type, const Vector3D& pos, Vector3D& direction);
 
     DArray<PowerUp> m_PowerUps;
 };

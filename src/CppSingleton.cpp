@@ -106,7 +106,7 @@ void Singleton::drawGame(){
 
     char buf[50];
     int timeleft =  secondsUntilImpact - m_timeDiff;
-    if (timeleft <= 0)
+    if (timeleft <= 0 || launchFireBall)
     {
         timeleft = 0;
     }
@@ -233,7 +233,7 @@ void Singleton::gameLogic(){
         }
     }
 
-    if (secondsUntilImpact == (int)m_timeDiff){
+    if ((int)m_timeDiff >= secondsUntilImpact){
         if(!showWinner)
         {
             launchFireBall = true;
@@ -481,9 +481,7 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
         {
             Creature * mate = Creatures.get(i);
 
-            const bool bCanProcreate = c->canProcreateWith(mate);
-
-            if ((bCanProcreate) && (!mate->dead) &&
+            if ((c->canProcreateWith(mate)) && (!mate->dead) &&
                 (mate->race == c->race) && (p[1].activeCreature != i) && (mate->radius > 15.5f))
             {
                 mate->pos.v[2] = 0;
@@ -505,6 +503,26 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
         {
             dir.normalize();
             c->dir = dir;
+        }
+        else //look for a female powerup
+        {
+            Vector3D pDir;
+            int iFemaleCount = Creatures.FemaleCount(c->race);
+            int iRaceCount = Creatures.countByRace(c->race);
+
+            if ((m_PowerUps.FindNearestPowerUp(PT_FEMALE, c->pos, pDir)) && (iFemaleCount < iRaceCount))
+            {
+                pDir.normalize();
+                c->dir = pDir;
+                c->haveDir = true;
+            }
+            else if (m_PowerUps.FindNearestPowerUp(PT_FERTILITY, c->pos, pDir) && (iFemaleCount > 0))
+            {
+                pDir.normalize();
+                c->dir = pDir;
+                c->haveDir = true;
+            }
+
         }
     }
     else

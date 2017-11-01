@@ -21,6 +21,16 @@ void Creature::draw(PicsContainer& pics){
         return;
     }
 
+    if (isWarrior)
+    {
+        pics.draw(21, pos.v[0], pos.v[1], 0, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
+    }
+
+    if (isBuilder)
+    {
+        pics.draw(22, pos.v[0], pos.v[1], 0, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
+    }
+
     unsigned trace = 0;
     switch (race){
         case 3: trace = 0; break;
@@ -234,6 +244,11 @@ void Creature::fight(Creature& other)
 
 void Creature::terraform(LevelMap& map)
 {
+    if (!isBuilder)
+    {
+        return;
+    }
+
     unsigned mapX = (pos.v[0]) / 32;
     unsigned mapY = (pos.v[1]) / 32;
 
@@ -245,6 +260,7 @@ void Creature::terraform(LevelMap& map)
 
         int iVal = -10;
         int iIndex = -1;
+
         for (int i = 0; i < ET_COUNT; ++i)
         {
             if (iTerrainBonuses[i] > iVal)
