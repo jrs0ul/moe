@@ -96,13 +96,7 @@ void Singleton::init(int width, int height){
 void Singleton::drawGame(){
 
     Mapas.draw(pics, 1, 0, 0, 1.0f, kiScreenWidth, kiScreenHeight);
-
-
-    for (unsigned i = 0; i < m_PowerUps.count(); ++i)
-    {
-        m_PowerUps[i].Render(pics, 20);
-    }
-
+    m_PowerUps.Render(pics, 20);
     Creatures.draw(pics);
 
     if ((launchFireBall)&&(!startImpact))
@@ -116,7 +110,7 @@ void Singleton::drawGame(){
     {
         timeleft = 0;
     }
-    pics.draw(-1, 100,0,0, false,440,40,0, COLOR(0.4,0.4,0.4,0.8), COLOR(0.4, 0.4, 0.4, 0.8));
+    pics.draw(-1, 100, 0, 0, false, 440, 40,0, COLOR(0.4,0.4,0.4,0.8), COLOR(0.4, 0.4, 0.4, 0.8));
     sprintf(buf,"Time left until impact: %d", timeleft);
     WriteShadedText(320-strlen(buf)*13/2, 10, pics, 0, buf);
 
@@ -124,6 +118,7 @@ void Singleton::drawGame(){
     {
         DrawVictoryDialog();
     }
+
     unsigned race1 = _RaceIndex[p[0].raceIndex];
     unsigned race2 = _RaceIndex[p[1].raceIndex];
 
@@ -190,9 +185,13 @@ void Singleton::gameLogic(){
 
     Creatures.Update(DeltaTime,
                      Mapas,
+                     m_PowerUps,
                      kiScreenWidth, kiScreenHeight,
                      p[0].activeCreature, p[1].activeCreature,
                      startImpact, showWinner);
+
+    m_PowerUps.Update(DeltaTime);
+    
 
     if (launchFireBall)
     {
@@ -219,7 +218,7 @@ void Singleton::gameLogic(){
         newP.pos = Vector3D((rand()%Mapas.width)*32.f, (rand()%Mapas.height)*32.f, 0.f);
         newP.type = rand()%PT_COUNT;
         newP.radius = 16.f;
-        m_PowerUps.add(newP);
+        m_PowerUps.m_PowerUps.add(newP);
 
     }
 
@@ -388,7 +387,7 @@ void Singleton::resetGame(){
     winnerRace = 0;
 
     m_Meteor.Destroy();
-    m_PowerUps.destroy();
+    m_PowerUps.m_PowerUps.destroy();
 
     Creatures.destroy();
     Mapas.generate(MaxMapWidth, MaxMapHeight);
@@ -406,6 +405,8 @@ void Singleton::resetGame(){
     impactCounter=0;
     impactanimtics = 0;
     launchFireBall = false;
+    m_timeDiffOld = 0;
+    m_timeDiff = 0;
 
 }
 //------------------------

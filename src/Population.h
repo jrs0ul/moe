@@ -3,16 +3,22 @@
 
 #include "Creature.h"
 #include "LevelMap.h"
+#include "PowerUp.h"
 
 class Population{
 
 
 public:
 
-    void Update(float fDeltaTime, LevelMap& Mapas,
+    void Update(float fDeltaTime,
+                LevelMap& Mapas,
+                PowerUpArray& PowerUps,
                 int iScreenWidth, int iScreenHeight,
-                unsigned& Player1ActiveCreature, unsigned& Player2ActiveCreature,
-                bool startImpact, bool showWinner);
+                unsigned& Player1ActiveCreature,
+                unsigned& Player2ActiveCreature,
+                bool startImpact,
+                bool showWinner);
+
     Creature * get(unsigned index);
     unsigned long count(){return creatures.count();}
     void destroy(){creatures.destroy();}

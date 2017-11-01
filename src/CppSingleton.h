@@ -192,7 +192,7 @@ public:
 private:
     static Singleton* m_Instance;
     Meteor            m_Meteor;
-    DArray<PowerUp>   m_PowerUps;
+    PowerUpArray      m_PowerUps;
 };
 
 #endif //_CPP_SINGLETON

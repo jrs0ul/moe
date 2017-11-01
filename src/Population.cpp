@@ -3,7 +3,8 @@
 #include "Utils.h"
 
 
-void Population::Update(float fDeltaTime, LevelMap& Mapas, 
+void Population::Update(float fDeltaTime, LevelMap& Mapas,
+                        PowerUpArray& PowerUps,
                         int iScreenWidth, int iScreenHeight, 
                         unsigned& Player1ActiveCreature, unsigned& Player2ActiveCreature,
                         bool startImpact, bool showWinner)
@@ -23,6 +24,30 @@ void Population::Update(float fDeltaTime, LevelMap& Mapas,
         {
             makeChild(c);
             c->givesBirth = false;
+        }
+
+
+        if ((i == Player1ActiveCreature) || (i == Player2ActiveCreature))
+        {
+            for (unsigned j = 0; j < PowerUps.m_PowerUps.count(); ++j)
+            {
+                PowerUp* pUp = &PowerUps.m_PowerUps[j];
+
+                if (!pUp->pickedUp)
+                {
+                    bool bColides = CirclesColide(c->pos.v[0],
+                                                  c->pos.v[1],
+                                                  c->radius,
+                                                  pUp->pos.v[0],
+                                                  pUp->pos.v[1],
+                                                  pUp->radius);
+                    if (bColides)
+                    {
+                        pUp->pickedUp = true;
+                    }
+
+                }
+            }
         }
 
         if (!showWinner)
