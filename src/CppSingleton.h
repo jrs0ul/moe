@@ -120,6 +120,8 @@ private:
 
     int FPS();
 
+    void ControlCreature(Player& player, const int* keyIndexes, Creature* playerCreature);
+
 public:
     bool Exit;
     

@@ -54,6 +54,7 @@ public:
     void fight(Creature& other);
     void terraform(LevelMap& map);
     void animate();
+    void Move(float fSpeed, int iMaxAreaX, int iMaxAreaY);
 
     void makePenguin();
     void makeGoat();

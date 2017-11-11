@@ -240,8 +240,6 @@ void Singleton::gameLogic(){
         }
     }
 
-
-    
     if ((OldKeys[7])&&(!Keys[7])){
         Creatures.nextActive(p[0].activeCreature, p[0].activeCreature);
     }
@@ -265,82 +263,20 @@ void Singleton::gameLogic(){
 
     if (!startImpact){
         
-        const float speed = 2.f;
         Creature* c = 0;
         c = Creatures.get(p[0].activeCreature);
-        if (c->procreating == false)
+        const int p1KeyIndexes[] = {8, 9, 10, 11, 4, 14};
+        ControlCreature(p[0], p1KeyIndexes, c);
+                
+        if (gamemode == TWO)
         {
-            if (Keys[8])
-            {
-                if (c->pos.v[1] > c->radius)
-                    c->pos.v[1] -= speed;
-            }
-            if (Keys[9]){
-                if (c->pos.v[1] < kiScreenHeight - c->radius)
-                    c->pos.v[1] += speed;
-            }
-            if (Keys[10]){
-                if (c->pos.v[0] > c->radius)
-                    c->pos.v[0] -= speed;
-            }
-            if (Keys[11])
-            {
-                if (c->pos.v[0] < kiScreenWidth - c->radius)
-                    c->pos.v[0] += speed;
-            }
-
-            if ((OldKeys[4]) && (!Keys[4]))
-            {
-                Creatures.interact(p[0].activeCreature);
-                if (c->procreating)
-                {
-                    Creatures.nextActive(p[0].activeCreature, p[0].activeCreature);
-                }
-
-            }
-
-            if ((OldKeys[14]) && (!Keys[14]))
-            {
-                c->terraform(Mapas);
-            }
-        }
-        
-        if (gamemode == TWO){
             c = Creatures.get(p[1].activeCreature);
-            if (c->procreating == false)
-            {
-                if (Keys[0])
-                    if (c->pos.v[1] > c->radius)
-                    c->pos.v[1] -= speed;
-                if (Keys[1])
-                    if (c->pos.v[1] < kiScreenHeight - c->radius)
-                        c->pos.v[1] += speed;
-                if (Keys[2])
-                    if (c->pos.v[0] > c->radius)
-                        c->pos.v[0] -= speed;
-                if (Keys[3])
-                    if (c->pos.v[0] < kiScreenWidth - c->radius)
-                        c->pos.v[0] += speed;
-
-                if ((OldKeys[5]) && (!Keys[5]))
-                {
-                    Creatures.interact(p[1].activeCreature);
-                    if (c->procreating)
-                    {
-                        Creatures.nextActive(p[1].activeCreature, p[1].activeCreature);
-                    }
-                }
-
-                if ((OldKeys[13]) && (!Keys[13]))
-                {
-                    c->terraform(Mapas);
-                }
-            }
-
+            const int p2KeyIndexes[] = {0, 1, 2, 3, 5, 13};
+            ControlCreature(p[1], p2KeyIndexes, c);
         }
         else
         {
-            SinglePlayerAI(kiScreenWidth, kiScreenHeight, speed);
+            SinglePlayerAI(kiScreenWidth, kiScreenHeight, 2.f);
         }
 
     }
@@ -527,14 +463,8 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
     }
     else
     {
-        if ((c->pos.v[1] < iMaxAreaY - c->radius) && (c->pos.v[0] < iMaxAreaY - c->radius)
-                    &&(c->pos.v[0] > c->radius) && (c->pos.v[1] > c->radius))
-        {
-            c->pos = c->pos + Vector3D(c->dir.v[0] * speed, c->dir.v[1] * speed, 0);
-        }
-
+        c->Move(speed, iMaxAreaX, iMaxAreaY);
         c->haveDir = false;
-
     }
 
     Creatures.interact(p[1].activeCreature);
@@ -735,3 +665,55 @@ int Singleton::FPS()
     frames = frames+1;
     return FPS;
 }
+
+void Singleton::ControlCreature(Player& player, const int* keyIndexes, Creature* playerCreature)
+{
+    const float speed = 2.f;
+
+    if (playerCreature->procreating == false)
+    {
+
+        playerCreature->dir.v[0] = 0;
+        playerCreature->dir.v[1] = 0;
+
+        if (Keys[keyIndexes[0]])
+        {
+            playerCreature->dir.v[1] = -1.f;
+        }
+
+        if (Keys[keyIndexes[1]])
+        {
+            playerCreature->dir.v[1] = 1.f;
+        }
+
+        if (Keys[keyIndexes[2]])
+        {
+            playerCreature->dir.v[0] = -1.f;
+        }
+
+        if (Keys[keyIndexes[3]])
+        {
+            playerCreature->dir.v[0] = 1.f;
+        }
+
+        playerCreature->Move(speed, kiScreenWidth, kiScreenHeight);
+
+        if ((OldKeys[keyIndexes[4]]) && (!Keys[keyIndexes[4]]))
+        {
+            Creatures.interact(player.activeCreature);
+
+            if (playerCreature->procreating)
+            {
+                Creatures.nextActive(player.activeCreature, player.activeCreature);
+            }
+
+        }
+
+        if ((OldKeys[keyIndexes[5]]) && (!Keys[keyIndexes[5]]))
+        {
+            playerCreature->terraform(Mapas);
+        }
+    }
+
+}
+

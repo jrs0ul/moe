@@ -139,6 +139,18 @@ void Creature::animate(){
     }
 }
 
+void Creature::Move(float fSpeed, int iMaxAreaX, int iMaxAreaY)
+{
+    Vector3D vNewPos = pos + (Vector3D(dir.v[0] * fSpeed, dir.v[1] * fSpeed, 0));
+            
+    if ((vNewPos.v[0] + radius < iMaxAreaX) && (vNewPos.v[0] > radius)
+                    && (vNewPos.v[1] + radius < iMaxAreaY) && (vNewPos.v[1] > radius))
+    {
+        pos = vNewPos;
+    }
+
+}
+
 void Creature::AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
 {
 
