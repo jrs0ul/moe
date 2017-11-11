@@ -104,6 +104,27 @@ void Singleton::drawGame(){
         m_Meteor.Render(pics);
     }
 
+    if (startImpact)
+    {
+
+        float fAlpha = 1.f - m_fImpactProgress + 0.2f;
+        if (fAlpha > 1.f)
+        {
+            fAlpha = 1.f;
+        }
+
+        COLOR impactColor(1, 0, 0, fAlpha);
+
+        pics.draw(15,
+                  (Mapas.width * 32) / 2, 
+                  (Mapas.height * 32) / 2,
+                  0, true, 
+                  m_fImpactProgress,
+                  m_fImpactProgress, 0, 
+                  impactColor,
+                  impactColor);
+    }
+
     char buf[50];
     int timeleft =  secondsUntilImpact - m_timeDiff;
     if (timeleft <= 0 || launchFireBall)
@@ -131,33 +152,42 @@ void Singleton::drawGame(){
 
     pics.drawBatch(666);
 }
-//----------------------------
-void Singleton::Impact(){
 
-    impactanimtics++;
-    if (impactanimtics > 15){
-        impactanimtics = 0;
+void Singleton::UpdateImpact(float fDeltaTime){
 
-        impactCounter++;
-        if (impactCounter < 11){
-            impactStep+=2;
-
-            for (int i = 0; i < impactStep; i++){
-                Mapas.affectTile(9-i+impactCounter, 8-impactCounter);
-                Mapas.affectTile(9-i+impactCounter, 6+impactCounter);
-
-                Mapas.affectTile(10+impactCounter, 6-i+impactCounter);
-                Mapas.affectTile(10-impactCounter, 6-i+impactCounter);
-            }
-
-        }
-        else{
-            whoWon();
-        }
+    if (m_fImpactProgress < 1.0f)
+    {
+        m_fImpactProgress += fDeltaTime * 0.35f;
+        Mapas.affectMap(320, 240, 404 * m_fImpactProgress);
     }
+    else
+    {
+        whoWon();
+    }
+
 }
-//----------------------------
-void Singleton::whoWon(){
+
+void Singleton::SpawnRandomPowerup()
+{
+    m_timeDiffOld = m_timeDiff;
+    //printf("Spawning powerup %d %d\n", rand()%Mapas.width, rand()%Mapas.height);
+    PowerUp newP;
+    newP.pos = Vector3D(Random(16, Mapas.width * 32 - 16),
+                        Random(16, Mapas.height * 32 - 16),
+                        0.f);
+
+        int iRandomValue = Random(0, 100);
+        newP.type = (iRandomValue * iRandomValue) / (10000 / PT_COUNT); //square distribution
+        newP.radius = 16.f;
+        m_PowerUps.m_PowerUps.add(newP);
+}
+
+void Singleton::whoWon()
+{
+    if (showWinner == true)
+    {
+        return;
+    }
 
     int raceCount1 = 0;
     int raceCount2 = 0;
@@ -172,19 +202,27 @@ void Singleton::whoWon(){
     if (raceCount1 > raceCount2)
         winnerRace = race1;
     if (raceCount1 == raceCount2)
+    {
         draw = true;
+    }
 
-    if ((raceCount2 < 1) || (raceCount1 < 1) || (impactCounter >= 11)){
+    if ((raceCount2 < 1) || (raceCount1 < 1) || m_fImpactProgress > 1.f)
+    {
         showWinner = true;
     }
 }
 
-void Singleton::gameLogic(){
+void Singleton::gameLogic()
+{
+    time_t now;
+    time(&now);
+    m_timeDiff = difftime(now, start);
 
     Mapas.animateTiles();
 
     Creatures.Update(DeltaTime,
                      Mapas,
+                     ss,
                      m_PowerUps,
                      secondsUntilImpact,
                      kiScreenWidth, kiScreenHeight,
@@ -193,42 +231,24 @@ void Singleton::gameLogic(){
 
     m_PowerUps.Update(DeltaTime);
     
+   
 
-    if (launchFireBall)
+    if ((startImpact)&&(!showWinner))
     {
-        m_Meteor.AnimateFireBall();
-    }
-
-    m_Meteor.AnimateTrail();
-    
-    time_t now;
-    time(&now);
-    m_timeDiff = difftime(now, start);
-
-    if (startImpact)
-    {
-        Impact();
+        UpdateImpact(DeltaTime);
     }
 
     if ((m_timeDiff - m_timeDiffOld > 2)&&(!startImpact))
     {
-        
-        m_timeDiffOld = m_timeDiff;
-        printf("Spawning powerup %d %d\n", rand()%Mapas.width, rand()%Mapas.height);
-        PowerUp newP;
-        newP.pos = Vector3D((rand()%Mapas.width)*32.f + 16.f, 
-                            (rand()%Mapas.height)*32.f + 16.f, 0.f);
-
-        int iRandomValue = Random(0, 100);
-        newP.type = (iRandomValue * iRandomValue) / (10000 / PT_COUNT); //square distribution
-        newP.radius = 16.f;
-        m_PowerUps.m_PowerUps.add(newP);
-
+        SpawnRandomPowerup();
     }
 
 
     if (launchFireBall)
     {
+        m_Meteor.AnimateFireBall();
+        m_Meteor.AnimateTrail();
+
         if (m_Meteor.Update(ss))
         {
             startImpact = true;
@@ -259,7 +279,6 @@ void Singleton::gameLogic(){
     if (showWinner){
         if (Keys[4])
             winnerClick = true;
-            //gamestate = SELECTRACE;
     }
 
 
@@ -341,12 +360,11 @@ void Singleton::resetGame(){
 
     secondsUntilImpact = timeUntilImpact;
     startImpact = false;
-    impactStep = -1;
-    impactCounter=0;
-    impactanimtics = 0;
     launchFireBall = false;
     m_timeDiffOld = 0;
     m_timeDiff = 0;
+
+    m_fImpactProgress = 0.f;
 
 }
 //------------------------

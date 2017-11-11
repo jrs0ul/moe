@@ -4,6 +4,7 @@
 #include "Creature.h"
 #include "LevelMap.h"
 #include "PowerUp.h"
+#include "audio/SoundSystem.h"
 
 class Population{
 
@@ -12,6 +13,7 @@ public:
 
     void Update(float fDeltaTime,
                 LevelMap& Mapas,
+                SoundSystem& ss,
                 PowerUpArray& PowerUps,
                 int& secondsUntilImpact,
                 int iScreenWidth, int iScreenHeight,

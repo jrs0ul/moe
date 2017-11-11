@@ -26,10 +26,10 @@ data/pics/smoke.tga
 32 32 1
 data/pics/title.tga
 220 512 1
-data/pics/creature1mask.tga
-32 32 1
-data/pics/creature2mask.tga
-32 32 1
+data/pics/marker.tga
+37 33 1
+data/pics/elipseofdeath.tga
+808 808 1
 data/pics/creature3mask.tga
 32 32 1
 data/pics/creature4mask.tga

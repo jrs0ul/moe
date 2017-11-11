@@ -283,6 +283,28 @@ bool CirclesColide(float x1,float y1,float radius1, float x2, float y2, float ra
      return   false;
 
 }
+
+bool CollisionCircleRectangle(float circleCenterX, float circleCenterY, float circleRadius,
+                              float rectX, float rectY, float rectWidth, float rectHeight){
+    
+    float tmpX = circleCenterX;
+    float tmpY = circleCenterY;
+
+    if (tmpX > rectX + rectWidth)  tmpX = rectX + rectWidth;
+    if (tmpX < rectX)              tmpX = rectX;
+    if (tmpY > rectY + rectHeight) tmpY = rectY + rectHeight;
+    if (tmpY < rectY)              tmpY = rectY;
+
+
+    float difx = (float) fabs (tmpX - circleCenterX);
+    float dify = (float) fabs (tmpY - circleCenterY);
+    float distance = (float) sqrt (difx * difx + dify * dify);
+
+    if (distance < circleRadius) return true;
+
+    return false; 
+}
+
 //------------------------------------------------
 int CollisionRay_Traingle( Vector3D rayOrigin, Vector3D rayDir,
                            Vector3D vert0,Vector3D vert1,

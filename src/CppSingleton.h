@@ -53,7 +53,9 @@ public:
     void destroy();
 
 private:
-    Singleton(){
+    Singleton()
+    : m_fImpactProgress(0.f)
+    {
         gamestate = TITLE;
         Exit = false;
         alpha = 0.0f;
@@ -74,14 +76,9 @@ private:
         Accumulator = 0;
         DT = 1000.0f/60.0f/1000.0f;
 
-
-
         secondsUntilImpact = timeUntilImpact;
 
         startImpact = false;
-        impactStep = -1;
-        impactCounter=0;
-        impactanimtics = 0;
         launchFireBall = false;
         showWinner = false;
         draw = false;
@@ -104,7 +101,8 @@ private:
     void drawGame();
     void gameLogic();
 
-    void Impact();
+    void UpdateImpact(float fDeltaTime);
+    void SpawnRandomPowerup();
 
     void drawSelectRace();
     void DrawVictoryDialog();
@@ -149,9 +147,6 @@ public:
     bool launchFireBall;
     int secondsUntilImpact;
     bool startImpact;
-    int impactStep;
-    int impactCounter;
-    int impactanimtics;
 
     bool showWinner;
     int winnerRace;
@@ -195,6 +190,7 @@ private:
     static Singleton* m_Instance;
     Meteor            m_Meteor;
     PowerUpArray      m_PowerUps;
+    float             m_fImpactProgress;
 };
 
 #endif //_CPP_SINGLETON

@@ -75,6 +75,10 @@ void    GetDirectoryList(const char* path, Lines& l);
 
 bool    CirclesColide(float x1,float y1,float radius1, float x2, float y2, float radius2);
 
+bool    CollisionCircleRectangle(float cirleCenterX, float circleCenterY, float circleRadius,
+                                 float rectX, float rectY, float rectWidth, float rectHeight);
+
+
 int     CollisionRay_Traingle( Vector3D rayOrigin, Vector3D rayDir,
                                Vector3D vert0, Vector3D vert1,
                                Vector3D vert2, float &t);

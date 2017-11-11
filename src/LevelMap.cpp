@@ -1,7 +1,7 @@
-
+#include "LevelMap.h"
+#include "Utils.h"
 #include <cmath>
 #include <wchar.h>
-#include "LevelMap.h"
 
 void LevelMap::destroy(){
     for (unsigned i = 0; i < height; i++)
@@ -83,20 +83,6 @@ void LevelMap::loadFromXMLNode(XmlNode * node){
     width = atoi(buf);
     wcstombs(buf, node->getAttribute(1)->getValue(), 100);//height
     height = atoi(buf);
-    XmlAttribute * picIndex = 0;
-    picIndex = node->getAttribute(2);
-    if (picIndex){
-        wcstombs(buf, picIndex->getValue(), 100);
-        backgroundPicIndex = (unsigned)atoi(buf);
-    }
-    
-    XmlAttribute * songPath = 0;
-    songPath = node->getAttribute(3);
-    if (songPath){
-        wcstombs(buf, songPath->getValue(), 100);
-        strncpy(musicPath, buf, 100);
-    }
-    
     
     map = new Tile*[height];
     
@@ -141,19 +127,6 @@ void LevelMap::putToXMLNode(XmlNode * node){
     #endif
             L"%u", height);
     node->addAtribute(L"height", buf);
-    swprintf(buf,
-    #ifndef __MINGW32__ 
-            100,
-    #endif
-            L"%u", backgroundPicIndex);
-    node->addAtribute(L"bgPicIndex", buf);
-    
-    swprintf(buf,
-#ifndef __MINGW32__ 
-             100,
-#endif
-             L"%s", musicPath);
-    node->addAtribute(L"music", buf);
     
     
     for (unsigned i = 0; i < height; i++){
@@ -285,7 +258,24 @@ void LevelMap::animateTiles(){
     }
 
 }
-//---------------------------
+
+void LevelMap::affectMap(int x, int y, int radius)
+{
+    for (unsigned i = 0; i < height; i++)
+    {
+        for (unsigned a = 0; a < width; a++)
+        {
+            if (map[i][a].affected == false)
+            {
+                if (CollisionCircleRectangle(x, y, radius, a * 32, i * 32, 32, 32))
+                {
+                    affectTile(a, i);
+                }
+            }
+        }
+    }
+}
+
 void LevelMap::affectTile(unsigned x, unsigned y){
 
     if ((x < width)&&(y < height))

@@ -22,20 +22,16 @@ struct Tile{
            animated = false;}
 };
 
-struct LevelMap{
-    
-    Tile ** map;
-    bool ** bmap;
+class LevelMap
+{
+public:
     unsigned width;
     unsigned height;
-    unsigned backgroundPicIndex;
-    char musicPath[255];
     
     LevelMap(){
         map = 0;
         width = 0;
         height = 0;
-        backgroundPicIndex = 13;
     }
     void destroy();
     void generate(unsigned _width = 0, unsigned _height = 0);
@@ -50,7 +46,14 @@ struct LevelMap{
     void setTerrainType(unsigned x, unsigned y, TerrainTypes t);
     void setTile(unsigned x, unsigned y, Tile & t);
     void animateTiles();
+    void affectMap(int x, int y, int radius);
+private:
     void affectTile(unsigned x, unsigned y);
+
+private:
+    Tile ** map;
+    bool ** bmap;
+
 };
 
 #endif //_LEVEL_MAP_H

@@ -10,7 +10,7 @@ void Creature::draw(PicsContainer& pics){
     if ((controled) && (!dead))
     {
         float fScale = radius / kfMaxRadius + 0.5f * pulsationProgress;
-        pics.draw(mask, pos.v[0], pos.v[1], frame, true, fScale, fScale, 0);
+        pics.draw(14, pos.v[0], pos.v[1], 0, true, fScale, fScale, 0);
     }
 
 

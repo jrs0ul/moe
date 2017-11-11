@@ -3,7 +3,9 @@
 #include "Utils.h"
 
 
-void Population::Update(float fDeltaTime, LevelMap& Mapas,
+void Population::Update(float fDeltaTime,
+                        LevelMap& Mapas,
+                        SoundSystem& ss,
                         PowerUpArray& PowerUps,
                         int& secondsUntilImpact,
                         int iScreenWidth, int iScreenHeight, 
@@ -65,8 +67,13 @@ void Population::Update(float fDeltaTime, LevelMap& Mapas,
         {
             groundEffect(i, Mapas);
 
-            if (c->hp <= 0){
-                c->dead = true;
+            if (c->hp <= 0)
+            {
+                if (!c->dead)
+                {
+                    ss.playsound(1);
+                    c->dead = true;
+                }
                 
                 if (i == Player1ActiveCreature)
                 {
@@ -131,7 +138,6 @@ void Population::nextActive(unsigned &Active, unsigned index)
     creatures[Active].pulseMultiplier = 1.f;
     tmp.destroy();
 }
-//------------------------
 //---------------------------
 void Population::draw(PicsContainer& pics){
 
