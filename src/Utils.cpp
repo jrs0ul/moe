@@ -95,8 +95,7 @@ void      UTF8toWchar(char* utftext, wchar_t * wchartext){
                         size_t s2 = utftextLen * sizeof(wchar_t);
                         char * in = utftext;
                         char * out = (char *)wchartext;
-                        size_t result = 0;
-                        result = iconv(cd, &in, (size_t*)&utftextLen, &out, (size_t*)&s2);
+                        iconv(cd, &in, (size_t*)&utftextLen, &out, (size_t*)&s2);
                         //if (s2 >= sizeof (wchar_t))
                         *((wchar_t *) out) = L'\0';
 
@@ -284,22 +283,6 @@ bool CirclesColide(float x1,float y1,float radius1, float x2, float y2, float ra
      return   false;
 
 }
-//-----------------------------------------------
-bool    CollisionSphere_Sphere(Vector3D pos1, float radius1,
-                               Vector3D pos2, float radius2){
-
-     float  difx = (float) fabs (pos1.v[0] - pos2.v[0]);
-     float  dify = (float) fabs (pos1.v[1] - pos2.v[1]);
-     float  difz = (float) fabs (pos1.v[2] - pos2.v[2]);
-
-     float   distance = (float) sqrt (difx * difx + dify * dify + difz * difz);
-
-     if   (distance < (radius1 + radius2))
-        return   true;
-
-     return   false;
-
-}
 //------------------------------------------------
 int CollisionRay_Traingle( Vector3D rayOrigin, Vector3D rayDir,
                            Vector3D vert0,Vector3D vert1,
@@ -339,33 +322,8 @@ int CollisionRay_Traingle( Vector3D rayOrigin, Vector3D rayDir,
     return 1;
 }
 
-//-----------------------------------------------
-
-float   CalcFrustumSphereRadius(float _near, float _far,
-                                float fov){
-    float viewLen = _far - _near;
-    float hviewLen = viewLen * 0.5f;
-    float frustumHeight = viewLen * tan((fov * 0.0174532925f) * 0.5f);
-    Vector3D P(0.0f, 0.0f, _near + hviewLen);
-    Vector3D Q(frustumHeight, frustumHeight, viewLen);
-    Vector3D Diff = P - Q;
-
-    return Diff.length();
-}
-//--------------------------------------------------------
-Vector3D    CalcFrustumSphereCenter(float _near, float _far,
-                                    Vector3D camPos, Vector3D camLook){
-
-
-    float hviewLen = (_far - _near) * 0.5f;
-    float distanceFromCam = hviewLen + _near;
-    // calculate the center of the sphere
-    Vector3D temp = Vector3D(camLook.v[0] * distanceFromCam,
-                             camLook.v[1] * distanceFromCam,
-                             camLook.v[2] * distanceFromCam);
-    return camPos + temp;
+int Random(int min, int max)
+{
+    return min + rand() / (RAND_MAX / (float)(max - min) + 1);
 
 }
-
-
-

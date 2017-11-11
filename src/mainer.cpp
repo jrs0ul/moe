@@ -185,7 +185,6 @@ int main( int   argc, char *argv[] ){
     
     srand(time(0));
 
-
     char buf[255];
     GetHomePath(buf);
 

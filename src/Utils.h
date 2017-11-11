@@ -75,15 +75,10 @@ void    GetDirectoryList(const char* path, Lines& l);
 
 bool    CirclesColide(float x1,float y1,float radius1, float x2, float y2, float radius2);
 
-bool    CollisionSphere_Sphere(Vector3D pos1, float radius1,
-                               Vector3D pos2, float radius2);
 int     CollisionRay_Traingle( Vector3D rayOrigin, Vector3D rayDir,
                                Vector3D vert0, Vector3D vert1,
                                Vector3D vert2, float &t);
 
-float       CalcFrustumSphereRadius(float near, float far, float fov);
-Vector3D    CalcFrustumSphereCenter(float near, float far,
-                                    Vector3D camPos, Vector3D camLook);
-
+int     Random(int min, int max);
 
 #endif //UTILS_H

@@ -7,11 +7,11 @@
 enum PowerUpTypes
 {
     PT_FEMALE = 0,
-    PT_WARRIOR,
-    PT_BUILDER,
-    PT_TIMEUP,
-    PT_TIMEDOWN,
     PT_FERTILITY,
+    PT_WARRIOR,
+    PT_TIMEUP,
+    PT_BUILDER,
+    PT_TIMEDOWN,
     PT_COUNT
 };
 

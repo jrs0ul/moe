@@ -218,7 +218,9 @@ void Singleton::gameLogic(){
         PowerUp newP;
         newP.pos = Vector3D((rand()%Mapas.width)*32.f + 16.f, 
                             (rand()%Mapas.height)*32.f + 16.f, 0.f);
-        newP.type = rand()%PT_COUNT;
+
+        int iRandomValue = Random(0, 100);
+        newP.type = (iRandomValue * iRandomValue) / (10000 / PT_COUNT); //square distribution
         newP.radius = 16.f;
         m_PowerUps.m_PowerUps.add(newP);
 
