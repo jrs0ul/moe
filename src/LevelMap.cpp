@@ -170,20 +170,28 @@ void LevelMap::putToXMLNode(XmlNode * node){
 }
 //--------------------
 void LevelMap::draw(PicsContainer& pics, unsigned index, int x, int y,
-                    float c, int screenWidth, int screenHeight){
+                    float c, int screenWidth, int screenHeight)
+{
+    const float fTileSize = 32.f;
+
     for (unsigned i = 0; i < height; i++)
-        for (unsigned a = 0; a < width; a++){
-                COLOR tcolor = map[i][a].c;
-                float _x = x + a * 32.0f;
-                float _y = y + i * 32.0f;
+    {
+        for (unsigned a = 0; a < width; a++)
+        {
+            COLOR tcolor = map[i][a].c;
+            float _x = x + a * fTileSize;
+            float _y = y + i * fTileSize;
                 
-                if ((_x > -32) && (_x < screenWidth)
-                    && (_y > -32) && (_y < screenHeight) && (c > 0.0f))
+            if ((_x > -fTileSize) && (_x < screenWidth)
+                    && (_y > -fTileSize) && (_y < screenHeight) && (c > 0.0f))
+            {
                     pics.draw(index, _x, _y ,
                               map[i][a].picture + map[i][a].frame, false, 1.0f, 1.0f, 0.0f,
                               COLOR(tcolor.c[0] * c, tcolor.c[1] * c, tcolor.c[2] * c), 
                               COLOR(tcolor.c[0] * c, tcolor.c[1] * c, tcolor.c[2] * c));
             }
+        }
+    }
 }
 
 int LevelMap::getTerrainType(unsigned x, unsigned y) const

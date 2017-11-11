@@ -2,19 +2,22 @@
 #include "externals.h"
 
 
-void Creature::draw(PicsContainer& pics){
-
+void Creature::draw(PicsContainer& pics, float OffsetX, float OffsetY)
+{
     const COLOR c = ((gaveBirth)? COLOR(0.5,0.5, 1.f, 1.f - deathProgress) : COLOR(1.f, 1.f, 1.f, 1.f - deathProgress)) ;
     const COLOR procreationColor = (controled)? COLOR(0, 0, 1, 0.8) : COLOR(0,0,0.6f, 0.5f);
 
     if ((controled) && (!dead))
     {
         float fScale = radius / kfMaxRadius + 0.5f * pulsationProgress;
-        pics.draw(14, pos.v[0], pos.v[1], 0, true, fScale, fScale, 0);
+        pics.draw(14, pos.v[0] + OffsetX, pos.v[1] + OffsetY, 0, true, fScale, fScale, 0);
     }
 
 
-    pics.draw(race, pos.v[0], pos.v[1], (dead) ? 2 : frame, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
+    pics.draw(race,
+              pos.v[0] + OffsetX,
+              pos.v[1] + OffsetY,
+              (dead) ? 2 : frame, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
 
     if (dead)
     {
@@ -23,12 +26,18 @@ void Creature::draw(PicsContainer& pics){
 
     if (isWarrior)
     {
-        pics.draw(21, pos.v[0], pos.v[1], 0, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
+        pics.draw(21,
+                  pos.v[0] + OffsetX,
+                  pos.v[1] + OffsetY,
+                  0, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
     }
 
     if (isBuilder)
     {
-        pics.draw(22, pos.v[0], pos.v[1], 0, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
+        pics.draw(22,
+                  pos.v[0] + OffsetX,
+                  pos.v[1] + OffsetY,
+                  0, true, radius / kfMaxRadius, radius / kfMaxRadius, 0, c, c);
     }
 
     unsigned trace = 0;
@@ -40,11 +49,14 @@ void Creature::draw(PicsContainer& pics){
     }
 
 
-    drawStatusBar(pics, pos.v[0]-15, pos.v[1]-22, hp, MaxHps[trace], COLOR(0.6f, 0.f, 0.f, 0.5f));
-    drawStatusBar(pics, pos.v[0]-15, pos.v[1]-30, 
+    drawStatusBar(pics, pos.v[0]-15 + OffsetX, pos.v[1]-22 + OffsetY, hp, MaxHps[trace], COLOR(0.6f, 0.f, 0.f, 0.5f));
+    drawStatusBar(pics, pos.v[0]-15 + OffsetX, pos.v[1]-30 + OffsetY, 
                   maxProcreationCount - procreationCount, maxProcreationCount, procreationColor);
 
-    pics.draw(19, pos.v[0] - 15, pos.v[1] - 30, (isFemale)? 1 : 0);
+    pics.draw(19,
+              pos.v[0] - 15 + OffsetX,
+              pos.v[1] - 30 + OffsetY,
+              (isFemale)? 1 : 0);
 
 }
 //-----------------------------

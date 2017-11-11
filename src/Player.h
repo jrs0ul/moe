@@ -8,8 +8,10 @@ struct Player{
     int raceIndex;
 
     unsigned activeCreature;
+    unsigned Id;
     
     Player(){
+        Id = 0;
         selectedRace = 0;
         raceSelected = false;
         raceIndex = 0;

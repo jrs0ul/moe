@@ -27,7 +27,7 @@ public:
     void destroy(){creatures.destroy();}
 
     void nextActive(unsigned &Active, unsigned index);
-    void draw(PicsContainer& pics);
+    void draw(PicsContainer& pics, float OffsetX, float OffsetY);
     void interact(unsigned interactor);
     void groundEffect(unsigned i, LevelMap& map);
     int  countByRace(unsigned race);

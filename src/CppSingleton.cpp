@@ -95,13 +95,13 @@ void Singleton::init(int width, int height){
 //----------------------------
 void Singleton::drawGame(){
 
-    Mapas.draw(pics, 1, 0, 0, 1.0f, kiScreenWidth, kiScreenHeight);
-    m_PowerUps.Render(pics, 20);
-    Creatures.draw(pics);
+    Mapas.draw(pics, 1, m_mapOffset.v[0], m_mapOffset.v[1], 1.0f, kiScreenWidth, kiScreenHeight);
+    m_PowerUps.Render(pics, 20, m_mapOffset.v[0], m_mapOffset.v[1]);
+    Creatures.draw(pics, m_mapOffset.v[0], m_mapOffset.v[1]);
 
     if ((launchFireBall)&&(!startImpact))
     {
-        m_Meteor.Render(pics);
+        m_Meteor.Render(pics, m_mapOffset.v[0], m_mapOffset.v[1]);
     }
 
     if (startImpact)
@@ -116,8 +116,8 @@ void Singleton::drawGame(){
         COLOR impactColor(1, 0, 0, fAlpha);
 
         pics.draw(15,
-                  (Mapas.width * 32) / 2, 
-                  (Mapas.height * 32) / 2,
+                  (Mapas.width * 32) / 2 + m_mapOffset.v[0], 
+                  (Mapas.height * 32) / 2 + m_mapOffset.v[1],
                   0, true, 
                   m_fImpactProgress,
                   m_fImpactProgress, 0, 
@@ -131,9 +131,13 @@ void Singleton::drawGame(){
     {
         timeleft = 0;
     }
-    pics.draw(-1, 100, 0, 0, false, 440, 40,0, COLOR(0.4,0.4,0.4,0.8), COLOR(0.4, 0.4, 0.4, 0.8));
-    sprintf(buf,"Time left until impact: %d", timeleft);
-    WriteShadedText(320-strlen(buf)*13/2, 10, pics, 0, buf);
+    pics.draw(16, 0, 0, 0);
+
+    pics.draw(17, 64, 0, p[0].raceIndex, false, -1, 1);
+    pics.draw(17, kiScreenWidth - 64, 0, p[1].raceIndex, false, 1, 1);
+
+    sprintf(buf,"%d", timeleft);
+    WriteShadedText(320, 10, pics, 0, buf);
 
     if (showWinner)
     {
@@ -146,9 +150,9 @@ void Singleton::drawGame(){
     int raceCount1 = Creatures.countByRace(race1);
     int raceCount2 = Creatures.countByRace(race2);
     sprintf(buf, "%d", raceCount1);
-    WriteShadedText(50, 20, pics, 0, buf);
+    WriteShadedText(80, 15, pics, 0, buf);
     sprintf(buf, "%d", raceCount2);
-    WriteShadedText(600, 20, pics, 0, buf);
+    WriteShadedText(548, 15, pics, 0, buf);
 
     pics.drawBatch(666);
 }
@@ -307,8 +311,6 @@ void Singleton::drawMainMenu()
 {
     pics.draw(11,0,0);
     pics.draw(13,300,50, 0, false, 0.5f, 0.5f);
-    //WriteShadedText(370, 420, pics, 0, "Press Enter to play...");
-    pics.draw(16, 440, activeButton * 40 + 416, 1, true, 1.15f, 1.15f, 0, COLOR(0,0,0), COLOR(0,0,0));
     pics.draw(5, 440, activeButton * 40 + 416, 1, true);
     OnePlayer_button.draw(pics, 18, 0);
     TwoPlayer_button.draw(pics, 18, 1);
@@ -338,6 +340,8 @@ void Singleton::render(){
 void Singleton::resetGame(){
     gamestate = GAME;
 
+    m_mapOffset = Vector3D(0, 64, 0);
+
     p[0].raceSelected = false;
     p[1].raceSelected = false;
 
@@ -353,7 +357,9 @@ void Singleton::resetGame(){
 
     Creatures.create(p[0].raceIndex, p[1].raceIndex);
     p[0].activeCreature = 0;
+    p[0].Id = 1;
     p[1].activeCreature = 5;
+    p[1].Id = 2;
     Creatures.get(p[0].activeCreature)->controled = true;
     Creatures.get(p[1].activeCreature)->controled = true;
     time(&start);
@@ -675,7 +681,6 @@ void Singleton::destroy(){
 
 int Singleton::FPS()
 {
-
     static int ctime = 0, FPS = 0, frames = 0, frames0 = 0;
     if ((int)TimeTicks >= ctime) {
         FPS = frames - frames0;
@@ -716,7 +721,34 @@ void Singleton::ControlCreature(Player& player, const int* keyIndexes, Creature*
             playerCreature->dir.v[0] = 1.f;
         }
 
+        //Vector3D oldPos = playerCreature->pos;
         playerCreature->Move(speed, kiScreenWidth, kiScreenHeight);
+
+        if (player.Id == 1)
+        {
+
+            float OffsetX = kiScreenWidth/2.f - playerCreature->pos.v[0];
+
+            if (Mapas.width * 32.f <= kiScreenWidth)
+            {
+                OffsetX = 0;
+            }
+
+            float OffsetY = (kiScreenHeight-64.f)/2.f - playerCreature->pos.v[1];
+            //printf("%f\n", OffsetY);
+            if ((OffsetY > 64.f)||(Mapas.height * 32 <= (kiScreenHeight-64.f)))
+            {
+                OffsetY = 64.f;
+            }
+
+            if (OffsetY < 0)
+            {
+                OffsetY = 0.f;
+            }
+
+            m_mapOffset = Vector3D( OffsetX, OffsetY, 0);
+        }
+
 
         if ((OldKeys[keyIndexes[4]]) && (!Keys[keyIndexes[4]]))
         {

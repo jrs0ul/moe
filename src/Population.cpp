@@ -139,7 +139,7 @@ void Population::nextActive(unsigned &Active, unsigned index)
     tmp.destroy();
 }
 //---------------------------
-void Population::draw(PicsContainer& pics){
+void Population::draw(PicsContainer& pics, float OffsetX, float OffsetY){
 
     DArray<Creature*> controledOnes;
 
@@ -151,7 +151,7 @@ void Population::draw(PicsContainer& pics){
         }
         else
         {
-            creatures[i].draw(pics);
+            creatures[i].draw(pics, OffsetX, OffsetY);
         }
     }
 
@@ -159,7 +159,7 @@ void Population::draw(PicsContainer& pics){
     {
         for (unsigned i = 0; i < controledOnes.count(); ++i)
         {
-            controledOnes[i]->draw(pics);
+            controledOnes[i]->draw(pics, OffsetX, OffsetY);
         }
     }
 

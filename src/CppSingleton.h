@@ -190,6 +190,7 @@ private:
     static Singleton* m_Instance;
     Meteor            m_Meteor;
     PowerUpArray      m_PowerUps;
+    Vector3D          m_mapOffset;
     float             m_fImpactProgress;
 };
 

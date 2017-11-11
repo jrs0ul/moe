@@ -1,16 +1,19 @@
 #include "Meteor.h"
 
-void Meteor::Render(PicsContainer& pics)
+void Meteor::Render(PicsContainer& pics, float OffsetX, float OffsetY)
 {
     for (unsigned i = 0; i < trail.count(); i++)
     {
-        pics.draw(12, trail[i].pos.v[0], trail[i].pos.v[1], 0, true,
-                      trail[i].size, trail[i].size, 0, trail[i].c, trail[i].c);
+        pics.draw(12, 
+                  trail[i].pos.v[0] + OffsetX,
+                  trail[i].pos.v[1] + OffsetY,
+                  0, true,
+                  trail[i].size, trail[i].size, 0, trail[i].c, trail[i].c);
     }
 
     pics.draw(4, 
-              fireballPos.v[0],
-              fireballPos.v[1],
+              fireballPos.v[0] + OffsetX,
+              fireballPos.v[1] + OffsetY,
               fireballFrame,
               true,
               3.7f - fireBallTics/80.0f,

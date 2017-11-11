@@ -31,7 +31,7 @@ public:
         fireballAnimTics = 0;
     }
 
-    void Render(PicsContainer& pics);
+    void Render(PicsContainer& pics, float OffsetX = 0.f, float OffsetY = 0.f);
     void AnimateFireBall();
     void AnimateTrail();
 
