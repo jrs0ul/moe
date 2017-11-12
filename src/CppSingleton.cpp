@@ -151,6 +151,11 @@ void Singleton::drawGame(){
         Creatures.draw(pics, p[1].mapOffset.v[0], p[1].mapOffset.v[1],
                        p[1].viewPortSize.v[0], p[1].viewPortSize.v[1]);
 
+        if ((launchFireBall)&&(!startImpact))
+        {
+            m_Meteor.Render(pics, p[1].mapOffset.v[0], p[1].mapOffset.v[1]);
+        }
+
 
         if (startImpact)
         {
@@ -164,8 +169,8 @@ void Singleton::drawGame(){
             COLOR impactColor(1, 0, 0, fAlpha);
 
             pics.draw(15,
-                      (Mapas.width * 32) / 2 + p[0].mapOffset.v[0], 
-                      (Mapas.height * 32) / 2 + p[0].mapOffset.v[1],
+                      (Mapas.width * 32) / 2 + p[1].mapOffset.v[0], 
+                      (Mapas.height * 32) / 2 + p[1].mapOffset.v[1],
                       0, true, 
                       m_fImpactProgress,
                       m_fImpactProgress, 0, 
