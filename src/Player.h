@@ -1,6 +1,8 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#include "Vectors.h"
+
 struct Player{
 
     unsigned selectedRace;
@@ -9,6 +11,10 @@ struct Player{
 
     unsigned activeCreature;
     unsigned Id;
+    
+    Vector3D    viewPortSize;
+    Vector3D    viewPortPos;
+    Vector3D    mapOffset;
     
     Player(){
         Id = 0;

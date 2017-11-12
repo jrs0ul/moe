@@ -29,7 +29,9 @@ public:
     , pickedUp(false)
     {}
 
-    void Render(PicsContainer& pics, unsigned pic, float OffsetX, float OffsetY);
+    void Render(PicsContainer& pics, unsigned pic, 
+                float OffsetX, float OffsetY,
+                float ViewPortWidht, float ViewPortHeight);
     void Update(float fDeltaTime);
 
     Vector3D pos;
@@ -51,7 +53,9 @@ class PowerUpArray
 public:
 
     void Update(float fDeltaTime);
-    void Render(PicsContainer& pics, unsigned uImageIndex, float OffsetX, float OffsetY);
+    void Render(PicsContainer& pics, unsigned uImageIndex,
+                float OffsetX, float OffsetY,
+                float ViewPortWidht, float ViewPortHeight);
     bool FindNearestPowerUp(int type, const Vector3D& pos, Vector3D& direction);
 
     DArray<PowerUp> m_PowerUps;

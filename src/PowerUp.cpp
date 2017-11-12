@@ -1,7 +1,14 @@
 #include "PowerUp.h"
 
-void PowerUp::Render(PicsContainer& pics, unsigned pic, float OffsetX, float OffsetY)
+void PowerUp::Render(PicsContainer& pics, unsigned pic, 
+                    float OffsetX, float OffsetY,
+                    float ViewPortWidht, float ViewPortHeigt)
 {
+    if (pos.v[0] - radius > -OffsetX + ViewPortWidht)
+    {
+        return;
+    }
+
     float fScale = ((bGrow) ? fAnimationProgress : 1 - fAnimationProgress) * 0.25f;
 
     COLOR c = COLOR(1.f, 1.f, 1.f, 1 - lifeTime);
@@ -43,14 +50,16 @@ void PowerUpArray::Update(float fDeltaTime)
     }
 }
 
-void PowerUpArray::Render(PicsContainer& pics, unsigned uImageIndex, float OffsetX, float OffsetY)
+void PowerUpArray::Render(PicsContainer& pics, unsigned uImageIndex,
+                          float OffsetX, float OffsetY,
+                          float ViewPortWidht, float ViewPortHeigt)
 {
 
     for (unsigned i = 0; i < m_PowerUps.count(); ++i)
     {
         if (!m_PowerUps[i].pickedUp)
         {
-            m_PowerUps[i].Render(pics, 20, OffsetX, OffsetY);
+            m_PowerUps[i].Render(pics, 20, OffsetX, OffsetY, ViewPortWidht, ViewPortHeigt);
         }
     }
 

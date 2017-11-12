@@ -190,8 +190,11 @@ private:
     static Singleton* m_Instance;
     Meteor            m_Meteor;
     PowerUpArray      m_PowerUps;
-    Vector3D          m_mapOffset;
     float             m_fImpactProgress;
+    /*float             m_fViewPortWidth;
+    float             m_fViewPortHeigt;
+    float             m_fViewPortPosX;
+    float             m_fViewPortPosY;*/
 };
 
 #endif //_CPP_SINGLETON

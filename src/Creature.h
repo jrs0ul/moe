@@ -49,7 +49,7 @@ public:
         pulseMultiplier = 1.f;
     }
 
-    void draw(PicsContainer& pics, float OffsetX = 0.f, float OffsetY = 0.f);
+    void draw(PicsContainer& pics, float OffsetX, float OffsetY, float ViewPortWidht, float ViewPortHeight);
     void AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap& map);
     void fight(Creature& other);
     void terraform(LevelMap& map);

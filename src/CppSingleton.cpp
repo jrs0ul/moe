@@ -95,13 +95,21 @@ void Singleton::init(int width, int height){
 //----------------------------
 void Singleton::drawGame(){
 
-    Mapas.draw(pics, 1, m_mapOffset.v[0], m_mapOffset.v[1], 1.0f, kiScreenWidth, kiScreenHeight);
-    m_PowerUps.Render(pics, 20, m_mapOffset.v[0], m_mapOffset.v[1]);
-    Creatures.draw(pics, m_mapOffset.v[0], m_mapOffset.v[1]);
+    //--
+    Mapas.draw(pics, 1, 
+               p[0].mapOffset.v[0], p[0].mapOffset.v[1],
+               1.0f,
+               p[0].viewPortSize.v[0], p[0].viewPortSize.v[1]);
+
+    m_PowerUps.Render(pics, 20, 
+                      p[0].mapOffset.v[0], p[0].mapOffset.v[1],
+                      p[0].viewPortSize.v[0], p[0].viewPortSize.v[1]);
+    Creatures.draw(pics, p[0].mapOffset.v[0], p[0].mapOffset.v[1],
+                   p[0].viewPortSize.v[0], p[0].viewPortSize.v[1]);
 
     if ((launchFireBall)&&(!startImpact))
     {
-        m_Meteor.Render(pics, m_mapOffset.v[0], m_mapOffset.v[1]);
+        m_Meteor.Render(pics, p[0].mapOffset.v[0], p[0].mapOffset.v[1]);
     }
 
     if (startImpact)
@@ -116,14 +124,62 @@ void Singleton::drawGame(){
         COLOR impactColor(1, 0, 0, fAlpha);
 
         pics.draw(15,
-                  (Mapas.width * 32) / 2 + m_mapOffset.v[0], 
-                  (Mapas.height * 32) / 2 + m_mapOffset.v[1],
+                  (Mapas.width * 32) / 2 + p[0].mapOffset.v[0], 
+                  (Mapas.height * 32) / 2 + p[0].mapOffset.v[1],
                   0, true, 
                   m_fImpactProgress,
                   m_fImpactProgress, 0, 
                   impactColor,
                   impactColor);
     }
+
+    pics.drawBatch(666);
+
+    //--
+    if (gamemode == TWO)
+    {
+        glScissor(0, 0, 320, 480);
+        glEnable(GL_SCISSOR_TEST);
+        Mapas.draw(pics, 1, 
+               p[1].mapOffset.v[0], p[1].mapOffset.v[1],
+               1.0f,
+               p[1].viewPortSize.v[0], p[1].viewPortSize.v[1]);
+
+        m_PowerUps.Render(pics, 20, 
+                      p[1].mapOffset.v[0], p[1].mapOffset.v[1],
+                      p[1].viewPortSize.v[0], p[1].viewPortSize.v[1]);
+        Creatures.draw(pics, p[1].mapOffset.v[0], p[1].mapOffset.v[1],
+                       p[1].viewPortSize.v[0], p[1].viewPortSize.v[1]);
+
+
+        if (startImpact)
+        {
+
+            float fAlpha = 1.f - m_fImpactProgress + 0.2f;
+            if (fAlpha > 1.f)
+            {
+                fAlpha = 1.f;
+            }
+
+            COLOR impactColor(1, 0, 0, fAlpha);
+
+            pics.draw(15,
+                      (Mapas.width * 32) / 2 + p[0].mapOffset.v[0], 
+                      (Mapas.height * 32) / 2 + p[0].mapOffset.v[1],
+                      0, true, 
+                      m_fImpactProgress,
+                      m_fImpactProgress, 0, 
+                      impactColor,
+                      impactColor);
+        }
+
+
+        pics.drawBatch(666);
+
+        glDisable(GL_SCISSOR_TEST);
+        pics.draw(-1, 319.5, 64, 0, false, 1.5, 480, 0, COLOR(1,1,0,1), COLOR(1,1,0,1));
+    }
+
 
     char buf[50];
     int timeleft =  secondsUntilImpact - m_timeDiff;
@@ -136,8 +192,9 @@ void Singleton::drawGame(){
     pics.draw(17, 64, 0, p[0].raceIndex, false, -1, 1);
     pics.draw(17, kiScreenWidth - 64, 0, p[1].raceIndex, false, 1, 1);
 
-    sprintf(buf,"%d", timeleft);
-    WriteShadedText(320, 10, pics, 0, buf);
+    //300px max
+    //120 secs max
+    pics.draw(-1, 182, 15, 0, false, (timeleft / 1.2) * 3, 25, 0, COLOR(1,0,0,0.8), COLOR(1,0,0,0.8));
 
     if (showWinner)
     {
@@ -153,6 +210,7 @@ void Singleton::drawGame(){
     WriteShadedText(80, 15, pics, 0, buf);
     sprintf(buf, "%d", raceCount2);
     WriteShadedText(548, 15, pics, 0, buf);
+
 
     pics.drawBatch(666);
 }
@@ -329,9 +387,22 @@ void Singleton::render(){
     {
         char buf[50];
         sprintf(buf, "FPS: %d", FPS());
-        WriteText(0, kiScreenHeight - 20, pics, 0, buf);
+        WriteShadedText(0, kiScreenHeight - 20, pics, 0, buf);
         sprintf(buf, "DeltaTime: %f", DeltaTime);
-        WriteText(0, kiScreenHeight - 40, pics, 0, buf);
+        WriteShadedText(0, kiScreenHeight - 40, pics, 0, buf);
+
+
+        if (gamestate == GAME)
+        {
+            int timeleft =  secondsUntilImpact - m_timeDiff;
+            if (timeleft <= 0 || launchFireBall)
+            {
+                timeleft = 0;
+            }
+            sprintf(buf,"%d", timeleft);
+            WriteShadedText(320, 10, pics, 0, buf);
+        }
+
         pics.drawBatch(666);
     }
 
@@ -340,7 +411,6 @@ void Singleton::render(){
 void Singleton::resetGame(){
     gamestate = GAME;
 
-    m_mapOffset = Vector3D(0, 64, 0);
 
     p[0].raceSelected = false;
     p[1].raceSelected = false;
@@ -371,6 +441,18 @@ void Singleton::resetGame(){
     m_timeDiff = 0;
 
     m_fImpactProgress = 0.f;
+
+    p[0].viewPortSize = Vector3D(kiScreenWidth, kiScreenHeight, 0.f);
+    p[0].viewPortPos = Vector3D(0.f, 64.f, 0.f);
+
+    if (gamemode == TWO)
+    {
+        p[0].viewPortSize = Vector3D(kiScreenWidth, kiScreenHeight, 0.f);
+        p[0].viewPortPos = Vector3D(kiScreenWidth/2.f, 64.f, 0.f);
+
+        p[1].viewPortSize = Vector3D(kiScreenWidth/2, kiScreenHeight, 0.f);
+        p[1].viewPortPos = Vector3D(0.f, 64.f, 0.f);
+    }
 
 }
 //------------------------
@@ -619,9 +701,13 @@ void Singleton::mainMenuLogic(){
     if ((!Keys[4])&&(OldKeys[4])){
         gamestate = SELECTRACE;
         if (activeButton == 0)
+        {
             gamemode = ONE;
+        }
         else 
+        {
             gamemode = TWO;
+        }
     }
 
     switch(activeButton){
@@ -724,30 +810,37 @@ void Singleton::ControlCreature(Player& player, const int* keyIndexes, Creature*
         //Vector3D oldPos = playerCreature->pos;
         playerCreature->Move(speed, kiScreenWidth, kiScreenHeight);
 
-        if (player.Id == 1)
+
+        const float fTileSize = 32.f;
+
+
+        float OffsetX = (player.viewPortSize.v[0] - player.viewPortPos.v[0])/ 2.f - playerCreature->pos.v[0] + player.viewPortPos.v[0];
+
+        if ((OffsetX > player.viewPortPos.v[0]) || 
+            (Mapas.width * fTileSize <= (player.viewPortSize.v[0] - player.viewPortPos.v[0])))
         {
-
-            float OffsetX = kiScreenWidth/2.f - playerCreature->pos.v[0];
-
-            if (Mapas.width * 32.f <= kiScreenWidth)
-            {
-                OffsetX = 0;
-            }
-
-            float OffsetY = (kiScreenHeight-64.f)/2.f - playerCreature->pos.v[1];
-            //printf("%f\n", OffsetY);
-            if ((OffsetY > 64.f)||(Mapas.height * 32 <= (kiScreenHeight-64.f)))
-            {
-                OffsetY = 64.f;
-            }
-
-            if (OffsetY < 0)
-            {
-                OffsetY = 0.f;
-            }
-
-            m_mapOffset = Vector3D( OffsetX, OffsetY, 0);
+            OffsetX = player.viewPortPos.v[0];
         }
+
+        if (OffsetX < (Mapas.width * fTileSize) * -1.f + player.viewPortSize.v[0])
+        {
+                OffsetX = (Mapas.width * fTileSize) * -1.f + player.viewPortSize.v[0];
+        }
+
+        float OffsetY = (player.viewPortSize.v[1] - player.viewPortPos.v[1]) / 2.f - playerCreature->pos.v[1];
+
+        if ((OffsetY > player.viewPortPos.v[1])||
+            (Mapas.height * fTileSize <= (player.viewPortSize.v[1] - player.viewPortPos.v[1])))
+        {
+            OffsetY = player.viewPortPos.v[1];
+        }
+
+        if (OffsetY < 0)
+        {
+            OffsetY = 0.f;
+        }
+
+        player.mapOffset = Vector3D( OffsetX, OffsetY, 0);
 
 
         if ((OldKeys[keyIndexes[4]]) && (!Keys[keyIndexes[4]]))
