@@ -25,7 +25,7 @@ data/pics/background.tga
 data/pics/smoke.tga
 32 32 1
 data/pics/title.tga
-220 512 1
+253 511 1
 data/pics/marker.tga
 37 33 1
 data/pics/elipseofdeath.tga

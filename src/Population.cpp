@@ -107,7 +107,10 @@ void Population::nextActive(unsigned &Active, unsigned index)
     unsigned irace = creatures[index].race;
     for (unsigned a = 0; a < creatures.count(); a++)
     {
-        if (((creatures[a].race == irace) && (!creatures[a].dead)) || (a == index))
+        const Creature* c = &creatures[a];
+
+        if (((c->race == irace) && (!c->dead) && (!c->procreating) && (!c->givesBirth))
+            || (a == index))
         {
             tmp.add(a);
         }

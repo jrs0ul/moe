@@ -51,7 +51,7 @@ else: #Mac OS X
                            'ogg', 'pthread'])
 
 
-env.Program(target = "MoE", 
+env.Program(target = "MoGE", 
             source = code
             )
 

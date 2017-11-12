@@ -205,7 +205,7 @@ int main( int   argc, char *argv[] ){
 
     Game->loadCfg();
     SDL.setMetrics(WIDTH, HEIGHT);
-    if (!SDL.InitWindow("Multiply or Extinct", "icon.bmp", Game->sys.isWindowed)){
+    if (!SDL.InitWindow("Multiply or Go Extinct", "icon.bmp", Game->sys.isWindowed)){
         Works = false;
     }
 
