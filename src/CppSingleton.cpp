@@ -2,6 +2,7 @@
 #include "CppSingleton.h"
 #include "Utils.h"
 #include "gui/Text.h"
+#include <cmath>
 #include <ctime>
 
 
@@ -92,24 +93,22 @@ void Singleton::init(int width, int height){
 
    }
 
-//----------------------------
-void Singleton::drawGame(){
-
-    //--
+void Singleton::drawPlayersView(const Player& p)
+{
     Mapas.draw(pics, 1, 
-               p[0].mapOffset.v[0], p[0].mapOffset.v[1],
+               p.mapOffset.v[0], p.mapOffset.v[1],
                1.0f,
-               p[0].viewPortSize.v[0], p[0].viewPortSize.v[1]);
+               p.viewPortSize.v[0], p.viewPortSize.v[1]);
 
     m_PowerUps.Render(pics, 20, 
-                      p[0].mapOffset.v[0], p[0].mapOffset.v[1],
-                      p[0].viewPortSize.v[0], p[0].viewPortSize.v[1]);
-    Creatures.draw(pics, p[0].mapOffset.v[0], p[0].mapOffset.v[1],
-                   p[0].viewPortSize.v[0], p[0].viewPortSize.v[1]);
+                      p.mapOffset.v[0], p.mapOffset.v[1],
+                      p.viewPortSize.v[0], p.viewPortSize.v[1]);
+    Creatures.draw(pics, p.mapOffset.v[0], p.mapOffset.v[1],
+                   p.viewPortSize.v[0], p.viewPortSize.v[1]);
 
-    if ((launchFireBall)&&(!startImpact))
+    if ((launchFireBall) && (!startImpact))
     {
-        m_Meteor.Render(pics, p[0].mapOffset.v[0], p[0].mapOffset.v[1]);
+        m_Meteor.Render(pics, p.mapOffset.v[0], p.mapOffset.v[1]);
     }
 
     if (startImpact)
@@ -124,8 +123,8 @@ void Singleton::drawGame(){
         COLOR impactColor(1, 0, 0, fAlpha);
 
         pics.draw(15,
-                  (Mapas.width * 32) / 2 + p[0].mapOffset.v[0], 
-                  (Mapas.height * 32) / 2 + p[0].mapOffset.v[1],
+                  (Mapas.width * 32) / 2 + p.mapOffset.v[0], 
+                  (Mapas.height * 32) / 2 + p.mapOffset.v[1],
                   0, true, 
                   m_fImpactProgress,
                   m_fImpactProgress, 0, 
@@ -135,54 +134,42 @@ void Singleton::drawGame(){
 
     pics.drawBatch(666);
 
-    //--
+
+}
+
+
+//----------------------------
+void Singleton::drawGame(){
+
+    drawPlayersView(p[0]); 
+
     if (gamemode == TWO)
     {
-        glScissor(0, 0, 320, 480);
-        glEnable(GL_SCISSOR_TEST);
-        Mapas.draw(pics, 1, 
-               p[1].mapOffset.v[0], p[1].mapOffset.v[1],
-               1.0f,
-               p[1].viewPortSize.v[0], p[1].viewPortSize.v[1]);
+        float y1 = p[0].mapOffset.v[1];
+        float y2 = p[1].mapOffset.v[1];
 
-        m_PowerUps.Render(pics, 20, 
-                      p[1].mapOffset.v[0], p[1].mapOffset.v[1],
-                      p[1].viewPortSize.v[0], p[1].viewPortSize.v[1]);
-        Creatures.draw(pics, p[1].mapOffset.v[0], p[1].mapOffset.v[1],
-                       p[1].viewPortSize.v[0], p[1].viewPortSize.v[1]);
-
-        if ((launchFireBall)&&(!startImpact))
-        {
-            m_Meteor.Render(pics, p[1].mapOffset.v[0], p[1].mapOffset.v[1]);
-        }
-
-
-        if (startImpact)
+        if (fabs(y1 - y2) > 10)
         {
 
-            float fAlpha = 1.f - m_fImpactProgress + 0.2f;
-            if (fAlpha > 1.f)
-            {
-                fAlpha = 1.f;
-            }
-
-            COLOR impactColor(1, 0, 0, fAlpha);
-
-            pics.draw(15,
-                      (Mapas.width * 32) / 2 + p[1].mapOffset.v[0], 
-                      (Mapas.height * 32) / 2 + p[1].mapOffset.v[1],
-                      0, true, 
-                      m_fImpactProgress,
-                      m_fImpactProgress, 0, 
-                      impactColor,
-                      impactColor);
+            p[0].viewPortPos = Vector3D(kiScreenWidth/2.f, 64.f, 0.f);
+        }
+        else
+        {
+            p[0].viewPortPos = Vector3D(0.f, 64.f, 0.f);
         }
 
+        if (fabs(y1 - y2) > 10)
+        {
+            glScissor(0, 0, kiScreenWidth/2, kiScreenHeight);
+            glEnable(GL_SCISSOR_TEST);
+        
+            drawPlayersView(p[1]);
 
-        pics.drawBatch(666);
+            pics.drawBatch(666);
 
-        glDisable(GL_SCISSOR_TEST);
-        pics.draw(-1, 319.5, 64, 0, false, 1.5, 480, 0, COLOR(1,1,0,1), COLOR(1,1,0,1));
+            glDisable(GL_SCISSOR_TEST);
+            pics.draw(-1, 319.5, 64, 0, false, 1.5, 480, 0, COLOR(1,1,0,1), COLOR(1,1,0,1));
+        }
     }
 
 

@@ -99,6 +99,7 @@ private:
 
     void drawMainMenu();
     void drawGame();
+    void drawPlayersView(const Player& p);
     void gameLogic();
 
     void UpdateImpact(float fDeltaTime);
