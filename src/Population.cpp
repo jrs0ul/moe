@@ -258,7 +258,8 @@ void Population::groundEffect(unsigned i, LevelMap& map){
 //----------------------------
 int Population::countByRace(unsigned race){
     int result = 0;
-    for (unsigned i = 0; i < creatures.count(); i++){
+    for (unsigned i = 0; i < creatures.count(); i++)
+    {
         if ((creatures[i].race == race)&&(!creatures[i].dead)){
             result++;
         }

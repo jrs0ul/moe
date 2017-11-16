@@ -184,6 +184,29 @@ void Singleton::drawGame(){
     pics.draw(17, 64, 0, p[0].raceIndex, false, -1, 1);
     pics.draw(17, kiScreenWidth - 64, 0, p[1].raceIndex, false, 1, 1);
 
+
+    unsigned race1 = _RaceIndex[p[0].raceIndex];
+    unsigned race2 = _RaceIndex[p[1].raceIndex];
+    int raceCount1 = Creatures.countByRace(race1);
+    int raceCount2 = Creatures.countByRace(race2);
+    int p1Females = Creatures.FemaleCount(race1);
+    int p2Females = Creatures.FemaleCount(race2);
+    
+    pics.draw(19, 80, 25, 1);
+    pics.draw(19, 100, 25, 0);
+    pics.draw(19, 528, 25, 1);
+    pics.draw(19, 548, 25, 0);
+
+    sprintf(buf, "%d", p1Females);
+    WriteShadedText(80, 40, pics, 0, buf);
+    sprintf(buf, "%d", p2Females);
+    WriteShadedText(528, 40, pics, 0, buf);
+    sprintf(buf, "%d", raceCount1 - p1Females);
+    WriteShadedText(100, 40, pics, 0, buf);
+    sprintf(buf, "%d", raceCount2 - p2Females);
+    WriteShadedText(548, 40, pics, 0, buf);
+
+
     //300px max
     //120 secs max
     pics.draw(-1, 182, 15, 0, false, (timeleft / 1.2) * 3, 25, 0, COLOR(1,0,0,0.8), COLOR(1,0,0,0.8));
@@ -193,15 +216,11 @@ void Singleton::drawGame(){
         DrawVictoryDialog();
     }
 
-    unsigned race1 = _RaceIndex[p[0].raceIndex];
-    unsigned race2 = _RaceIndex[p[1].raceIndex];
 
-    int raceCount1 = Creatures.countByRace(race1);
-    int raceCount2 = Creatures.countByRace(race2);
     sprintf(buf, "%d", raceCount1);
-    WriteShadedText(80, 15, pics, 0, buf);
+    WriteShadedText(80, 6, pics, 0, buf, 1.5f, 1.5f);
     sprintf(buf, "%d", raceCount2);
-    WriteShadedText(548, 15, pics, 0, buf);
+    WriteShadedText(548, 6, pics, 0, buf, 1.5f, 1.5f);
 
 
     pics.drawBatch(666);
