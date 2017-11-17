@@ -222,21 +222,62 @@ void Population::interact(unsigned interactor)
 //-------------------------
 void Population::groundEffect(unsigned i, LevelMap& map){
 
-    creatures[i].damageTics++;
+    Creature* c = &creatures[i];
 
-    if (creatures[i].damageTics > 10){
-        creatures[i].damageTics = 0;
-        int x = creatures[i].pos.v[0] / 32;
-        int y = (creatures[i].pos.v[1]+15) / 32;
+    c->damageTics++;
 
-        if ((x < 0)||(x >= (int)MaxMapWidth))
-            return;
-        if ((y < 0)||(y >= (int)MaxMapHeight))
-            return;
+    if (c->damageTics > 10){
+        c->damageTics = 0;
 
-        int TerrainType = map.getTerrainType(x, y);
+        const float radius = c->radius/2.f;
 
-        creatures[i].hp += creatures[i].iTerrainBonuses[TerrainType];
+        int x1 = (c->pos.v[0] - radius) / 32;
+        int y1 = (c->pos.v[1] - radius) / 32;
+        int x2 = (c->pos.v[0] + radius) / 32;
+        int y2 = (c->pos.v[1] + radius) / 32;
+
+        int tileArray[20];
+        int count = 0;
+
+        for (int i = y1; i <= y2; ++i)
+        {
+            for (int j = x1; j <= x2; ++j)
+            {
+                tileArray[count] = map.getTerrainType(j, i);
+                count++;
+           
+                /*if (c->controled && c->isWarrior)
+                {
+                    switch (tileArray[count])
+                    {
+                        case ET_ICE: printf("ICE "); break;
+                        case ET_GROUND: printf("GROUND "); break;
+                        case ET_WATER: printf("WATER "); break;
+                        case ET_GRASS: printf("GRASS "); break;
+                        case ET_LAVA: printf("LAVA "); break;
+                    }
+                }*/
+            }
+
+        }
+
+
+        int hpDifference = 0;
+
+        for (int i = 0; i < count; ++i)
+        {
+            hpDifference += creatures[i].iTerrainBonuses[tileArray[i]];
+        }
+
+        hpDifference = hpDifference / count;
+
+        /*if (c->controled && c->isWarrior)
+        {
+            printf("| %d %d %d %d x %f y %f rad %f hpDiff %d\n", x1, y1, x2, y2, c->pos.v[0], c->pos.v[1], radius, hpDifference);
+        }*/
+
+
+        creatures[i].hp += hpDifference;
 
         unsigned race = creatures[i].race;
         unsigned trace = 0;

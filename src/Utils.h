@@ -68,7 +68,7 @@ void GetHomePath(char * _homePath);
 //Multiplatform directory creation
 void    MakeDir(const char * path);
 
-double _round(double x);
+int roundDouble2Int(double x);
 
 void    GetFileList(const char * path, Lines& l);
 void    GetDirectoryList(const char* path, Lines& l);
