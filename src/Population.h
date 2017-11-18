@@ -24,17 +24,17 @@ public:
 
     Creature * get(unsigned index);
     unsigned long count(){return creatures.count();}
-    void destroy(){creatures.destroy();}
+    void destroy();
 
     void nextActive(unsigned &Active, unsigned index);
     void draw(PicsContainer& pics, 
               float OffsetX, float OffsetY,
               float ViewPortWidht, float ViewPortHeight);
-    void interact(unsigned interactor);
+    void interact(unsigned interactor, SoundSystem& ss);
     void groundEffect(unsigned i, LevelMap& map);
     int  countByRace(unsigned race);
     int  FemaleCount(unsigned race);
-    void create(unsigned race1, unsigned race2);
+    void create(unsigned race1, unsigned race2, SoundSystem& ss);
 
 private:
     void Fertilize(unsigned race);

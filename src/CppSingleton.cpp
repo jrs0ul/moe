@@ -436,7 +436,8 @@ void Singleton::resetGame(){
     Creatures.destroy();
     Mapas.generate(MaxMapWidth, MaxMapHeight);
 
-    Creatures.create(p[0].raceIndex, p[1].raceIndex);
+    Creatures.create(p[0].raceIndex, p[1].raceIndex, ss);
+
     p[0].activeCreature = 0;
     p[0].Id = 1;
     p[1].activeCreature = 5;
@@ -565,7 +566,13 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
             int iFemaleCount = Creatures.FemaleCount(c->race);
             int iRaceCount = Creatures.countByRace(c->race);
 
-            if ((m_PowerUps.FindNearestPowerUp(PT_FEMALE, c->pos, pDir)) && (iFemaleCount < iRaceCount))
+            if (m_PowerUps.FindNearestPowerUp(PT_WARRIOR, c->pos, pDir))
+            {
+                pDir.normalize();
+                c->dir = pDir;
+                c->haveDir = true;
+            }
+            else if ((m_PowerUps.FindNearestPowerUp(PT_FEMALE, c->pos, pDir)) && (iFemaleCount < iRaceCount))
             {
                 pDir.normalize();
                 c->dir = pDir;
@@ -586,9 +593,9 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
         c->haveDir = false;
     }
 
-    Creatures.interact(p[1].activeCreature);
+    Creatures.interact(p[1].activeCreature, ss);
 
-    if ((c->procreationCount >= c->maxProcreationCount) || (c->gaveBirth))
+    if ((c->procreationCount >= c->maxProcreationCount) || (c->gaveBirth) || (c->isWarrior))
     {
         Creatures.nextActive(p[1].activeCreature, p[1].activeCreature);
     }
@@ -856,7 +863,7 @@ void Singleton::ControlCreature(Player& player, const int* keyIndexes, Creature*
 
         if ((OldKeys[keyIndexes[4]]) && (!Keys[keyIndexes[4]]))
         {
-            Creatures.interact(player.activeCreature);
+            Creatures.interact(player.activeCreature, ss);
 
             if (playerCreature->procreating)
             {

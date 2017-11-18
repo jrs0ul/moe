@@ -18,7 +18,7 @@ void Population::Update(float fDeltaTime,
 
         if (!startImpact)
         {
-            c->AI(fDeltaTime, iScreenWidth, iScreenHeight, Mapas);
+            c->AI(fDeltaTime, iScreenWidth, iScreenHeight, Mapas, creatures);
         }
 
         c->animate();
@@ -71,7 +71,7 @@ void Population::Update(float fDeltaTime,
             {
                 if (!c->dead)
                 {
-                    ss.playsound(1);
+                    c->playAttachedSound(0);
                     c->dead = true;
                 }
                 
@@ -97,6 +97,17 @@ Creature * Population::get(unsigned index)
         return &creatures[index];
 
     return 0;
+}
+
+void Population::destroy()
+{
+    for (unsigned i = 0; i < creatures.count(); ++i)
+    {
+        creatures[i].freeSoundSource(1);
+        creatures[i].freeSoundSource(0);
+    }
+
+    creatures.destroy();
 }
 
 void Population::nextActive(unsigned &Active, unsigned index)
@@ -173,7 +184,7 @@ void Population::draw(PicsContainer& pics,
 }
 
 
-void Population::interact(unsigned interactor)
+void Population::interact(unsigned interactor, SoundSystem& ss)
 {
 
     Creature* c = get(interactor);
@@ -320,7 +331,8 @@ int Population::FemaleCount(unsigned race)
 
 }
 //-----------------------------
-void Population::create(unsigned race1, unsigned race2){
+void Population::create(unsigned race1, unsigned race2, SoundSystem& ss){
+
     for (unsigned i = 0; i < 10; i++){
         Creature c;
 
@@ -345,6 +357,8 @@ void Population::create(unsigned race1, unsigned race2){
 
         }
         c.dir = Vector3D(0, 0, 0);
+        c.attachBuffer(ss, 1, 0);
+        c.attachBuffer(ss, 2, 1);
         creatures.add(c);
     }
 

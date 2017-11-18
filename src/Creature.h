@@ -3,6 +3,7 @@
 
 #include "Vectors.h"
 #include "TextureLoader.h"
+#include "audio/SoundSystem.h"
 #include "LevelMap.h"
 
 
@@ -17,6 +18,7 @@ public:
     , radius(16.f)
     //...
     , procreationProgress(0.f)
+    , attackProgress(0.f)
     //...
     , procreating(false)
     , givesBirth(false)
@@ -50,7 +52,12 @@ public:
     }
 
     void draw(PicsContainer& pics, float OffsetX, float OffsetY, float ViewPortWidht, float ViewPortHeight);
-    void AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap& map);
+    void AI(float fDeltaTime, 
+            int iMaxAreaX, 
+            int iMaxAreaY, 
+            const LevelMap& map,
+            DArray<Creature>& creatures);
+
     void fight(Creature& other);
     void terraform(LevelMap& map);
     void animate();
@@ -63,8 +70,18 @@ public:
 
     bool canProcreateWith(Creature* other) const;
 
+
+    void attachBuffer(SoundSystem& ss, unsigned int index, unsigned int place);
+    void freeSoundSource(unsigned int place);
+    void playAttachedSound(unsigned int place, float volume = 1.0f);
+
+
 private:
     void drawStatusBar(PicsContainer& pics, float x, float y, float current, float max, const COLOR& c);
+
+private:
+   unsigned soundSources[10];
+ 
 
 public:
 
@@ -76,6 +93,7 @@ public:
     float pulsationProgress;
     float pulseMultiplier;
     float procreationProgress;
+    float attackProgress;
 
     int hp;
     int attack;
@@ -103,6 +121,7 @@ public:
     bool isFemale;
     bool isWarrior;
     bool isBuilder;
+
 };
 
 

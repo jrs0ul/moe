@@ -1,4 +1,5 @@
 #include "Creature.h"
+#include "Utils.h"
 #include "externals.h"
 
 
@@ -157,6 +158,57 @@ void Creature::animate(){
     }
 }
 
+void Creature::fight(Creature& other)
+{
+    playAttachedSound(1);
+    int damage = Random(0, attack / 2) + attack / 2;
+    other.hp -= damage;
+    int oponentDamage = Random(0, other.attack / 2);
+    hp -= oponentDamage;
+
+    printf("your damage: %d oponent's :%d\n", damage, oponentDamage);
+    if (other.hp < 0)
+    {
+        printf("-------------\n");
+    }
+}
+
+void Creature::terraform(LevelMap& map)
+{
+    if (!isBuilder)
+    {
+        return;
+    }
+
+    unsigned mapX = (pos.v[0]) / 32;
+    unsigned mapY = (pos.v[1]) / 32;
+
+
+    int iTerrain = map.getTerrainType(mapX, mapY);
+
+    if (iTerrain != -1)
+    {
+
+        int iVal = -10;
+        int iIndex = -1;
+
+        for (int i = 0; i < ET_COUNT; ++i)
+        {
+            if (iTerrainBonuses[i] > iVal)
+            {
+                iVal = iTerrainBonuses[i];
+                iIndex = i;
+            }
+        }
+        
+
+        if (iIndex > -1)
+        {
+            map.setTerrainType(mapX, mapY, (TerrainTypes)iIndex);
+        }
+    }
+}
+
 void Creature::Move(float fSpeed, int iMaxAreaX, int iMaxAreaY)
 {
     Vector3D vNewPos = pos + (Vector3D(dir.v[0] * fSpeed, dir.v[1] * fSpeed, 0));
@@ -169,7 +221,10 @@ void Creature::Move(float fSpeed, int iMaxAreaX, int iMaxAreaY)
 
 }
 
-void Creature::AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap& map)
+void Creature::AI(float fDeltaTime, 
+                  int iMaxAreaX, int iMaxAreaY,
+                  const LevelMap& map,
+                  DArray<Creature>& creatures)
 {
 
     if (dead)
@@ -220,7 +275,46 @@ void Creature::AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap
 
     if (controled == false)
     {
-        if (movetics < 50)
+
+        if (isWarrior)
+        {
+            haveDir = false;
+            /*if (haveDir == false)
+            {*/
+                float shortestDistance = 999.f;
+
+                for (unsigned i = 0; i < creatures.count(); ++i)
+                {
+                    Creature* c = &creatures[i];
+
+                    if (c->race != race && !c->dead)
+                    {
+                        c->pos.v[2] = 0;
+                        pos.v[2] = 0;
+                        Vector3D d = c->pos - pos;
+                        float len = d.length();
+
+                        if (len < shortestDistance)
+                        {
+                            shortestDistance = len;
+                            dir = d;
+                        }
+
+                        haveDir = true;
+                        
+                    }
+
+                }
+
+                if (haveDir)
+                {
+                    dir.normalize();
+                }
+
+            //}
+        }
+
+        if ((movetics < 50) || (isWarrior && haveDir)) 
         {
             movetics += fDeltaTime * 59.f;
 
@@ -232,6 +326,32 @@ void Creature::AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap
             {
                 pos = posOld;
             }
+
+            //check if collides with target
+            if (isWarrior)
+            {
+                for (unsigned i = 0; i < creatures.count(); ++i)
+                {
+                    Creature* c = &creatures[i];
+
+                    if (c->race != race && !c->dead)
+                    {
+                        if (CirclesColide(pos.v[0], pos.v[1], radius, c->pos.v[0], c->pos.v[1], c->radius))
+                        {
+                            attackProgress += fDeltaTime * 1.3f;
+
+                            if (attackProgress > 1.f)
+                            {
+                                fight(*c);
+                                attackProgress = 0.f;
+                            }
+                        }
+                        
+                    }
+
+                }
+            }
+
         }
         else
         {
@@ -266,45 +386,53 @@ void Creature::AI(float fDeltaTime, int iMaxAreaX, int iMaxAreaY, const LevelMap
     }
 }
 
-void Creature::fight(Creature& other)
-{
-    other.hp -= (rand() % (attack / 2)) + attack / 2;
-    hp -= rand() % other.attack / 4;
+void Creature::attachBuffer(SoundSystem& ss, unsigned int index, unsigned int place){
+    
+    if (alIsSource(soundSources[place]))
+        alDeleteSources(1, &soundSources[place]);
+    alGenSources(1, &soundSources[place]);
+    alSourcei(soundSources[place], AL_BUFFER, ss.getBuffer(index));
+    
+    //ALenum r=0;
+    //r=alGetError();
+    //if ( r != AL_NO_ERROR){
+    //    printf("Error: %x while attaching\n",r);
+    //}
+   // else
+   //     puts("attached");
 }
 
-void Creature::terraform(LevelMap& map)
-{
-    if (!isBuilder)
-    {
-        return;
+
+void Creature::freeSoundSource(unsigned int place){
+    if (alIsSource(soundSources[place])){
+        alSourceStop(soundSources[place]);
+        alDeleteSources(1, &soundSources[place]);
     }
-
-    unsigned mapX = (pos.v[0]) / 32;
-    unsigned mapY = (pos.v[1]) / 32;
-
-
-    int iTerrain = map.getTerrainType(mapX, mapY);
-
-    if (iTerrain != -1)
-    {
-
-        int iVal = -10;
-        int iIndex = -1;
-
-        for (int i = 0; i < ET_COUNT; ++i)
-        {
-            if (iTerrainBonuses[i] > iVal)
-            {
-                iVal = iTerrainBonuses[i];
-                iIndex = i;
-            }
-        }
-        
-
-        if (iIndex > -1)
-        {
-            map.setTerrainType(mapX, mapY, (TerrainTypes)iIndex);
-        }
+}
+//---------------------------------
+void Creature::playAttachedSound(unsigned int place, float volume){
+    if (alIsSource(soundSources[place])){
+        /*alSource3f(soundSources[place], AL_POSITION, pos.x(), pos.z(), pos.y());
+        alSource3f(soundSources[place], AL_DIRECTION, direction.x(), direction.z(), direction.y());
+        alSource3f(soundSources[place], AL_VELOCITY, direction.x() * speed, direction.z(), direction.y() * speed);
+        alSourcei (soundSources[place], AL_SOURCE_RELATIVE, AL_FALSE);
+        alSourcef(soundSources[place], AL_CONE_OUTER_ANGLE, 360.0f);
+        alSourcef(soundSources[place], AL_CONE_INNER_ANGLE, 360.0f);
+        alSourcef(soundSources[place], AL_MAX_DISTANCE, 32.0f * ((place == 2) ? 10 : 5));
+        alSourcef(soundSources[place], AL_REFERENCE_DISTANCE, 32.0f);
+        alSourcef(soundSources[place], AL_GAIN, ((place == 2) ? 1.0 : 0.6f)*volume);
+        alSourcef(soundSources[place], AL_PITCH, 1.0f);*/
+        alSourcePlay(soundSources[place]);
+        //ALenum r = 0;
+        //r = alGetError();
+        /*if ( r != AL_NO_ERROR){
+            printf("Error: %x while playing\n",r);
+        }*/
     }
+   // else 
+   //     puts("bad source");
 
 }
+
+
+
