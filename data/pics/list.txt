@@ -44,3 +44,5 @@ data/pics/warrior.tga
 32 32 1
 data/pics/builder.tga
 32 32 1
+data/pics/dialog.tga
+247 500 1

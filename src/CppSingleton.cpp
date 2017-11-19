@@ -213,7 +213,7 @@ void Singleton::drawGame(){
 
     if (showWinner)
     {
-        DrawVictoryDialog();
+        DrawVictoryDialog(120, 140 + 340 * (1.f - m_fVictoryDialogProgress));
     }
 
 
@@ -350,8 +350,18 @@ void Singleton::gameLogic()
     }
 
     if (showWinner){
-        if (Keys[4])
-            winnerClick = true;
+
+        if (m_fVictoryDialogProgress < 1.f)
+        {
+            m_fVictoryDialogProgress += DeltaTime;
+        }
+        else
+        {
+            if (Keys[4])
+            {
+                winnerClick = true;
+            }
+        }
     }
 
 
@@ -429,6 +439,7 @@ void Singleton::resetGame(){
     draw = false;
     showWinner = false;
     winnerRace = 0;
+    m_fVictoryDialogProgress = 0.f;
 
     Creatures.destroy();
     Mapas.generate(MaxMapWidth, MaxMapHeight);
@@ -672,9 +683,9 @@ void Singleton::drawSelectRace(){
 
 }
 
-void Singleton::DrawVictoryDialog()
+void Singleton::DrawVictoryDialog(float x, float y)
 {
-    pics.draw(-1,120,140,0, false,400,200,0, COLOR(0.4,0.4,0.4,0.8), COLOR(0.4, 0.4, 0.4, 0.8));
+    pics.draw(23, x, y, 0);
     if ((!draw)&&(winnerRace))
     {
 
@@ -683,30 +694,30 @@ void Singleton::DrawVictoryDialog()
 
             case 2:{
                         iRaceNameIndex = 1;
-                        pics.draw(8, 125, 145, 0, false);
+                        pics.draw(8, x + 18.f, y + 10.f, 0, false);
                    } break;
             case 3:{
                         iRaceNameIndex = 0;
-                        pics.draw(7, 125, 145, 0, false);
+                        pics.draw(7, x + 18.f, y + 10.f, 0, false);
                    }break;
             case 5:{ 
                         iRaceNameIndex = 2;
-                        pics.draw(10, 125, 145, 0, false);
+                        pics.draw(10, x + 18.f, y + 10.f, 0, false);
                     }break;
             case 6:{
                         iRaceNameIndex = 3;
-                        pics.draw(9, 125, 145, 0, false);
+                        pics.draw(9, x + 18.f, y + 10.f, 0, false);
                     };break;
         }
 
         char finalBuff[255];
         sprintf(finalBuff, "%s have won!", RaceNames[iRaceNameIndex]);
-        WriteShadedText(300, 260, pics, 0, finalBuff);
+        WriteShadedText(x + 170, y + 120, pics, 0, finalBuff);
 
     }
     else
     {
-        WriteShadedText(320-100, 230, pics, 0, "Draw!");
+        WriteShadedText(x + 100, y + 90, pics, 0, "Draw!");
     }
 
 }

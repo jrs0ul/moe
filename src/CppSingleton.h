@@ -85,6 +85,8 @@ private:
         draw = false;
         winnerRace = 0;
         winnerClick = false;
+        m_fVictoryDialogProgress = 0.f;
+
         activeButton = 0;
 
         OnePlayer_button.set(470, 400, 128, 32);
@@ -107,7 +109,7 @@ private:
     void SpawnRandomPowerup();
 
     void drawSelectRace();
-    void DrawVictoryDialog();
+    void DrawVictoryDialog(float x, float y);
     void selectRaceLogic();
 
 
@@ -150,10 +152,11 @@ public:
     int secondsUntilImpact;
     bool startImpact;
 
+
     bool showWinner;
     int winnerRace;
     bool draw;
-
+    float m_fVictoryDialogProgress;
 
     SystemConfig sys;
     
