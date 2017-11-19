@@ -829,85 +829,86 @@ int Singleton::FPS()
 
 void Singleton::ControlCreature(Player& player, const int* keyIndexes, Creature* playerCreature)
 {
+
+    if (playerCreature->procreating || playerCreature->dead || playerCreature->givesBirth)
+    {
+        return;
+    }
+
     const float speed = 2.f;
 
-    if (playerCreature->procreating == false)
+    playerCreature->dir.v[0] = 0;
+    playerCreature->dir.v[1] = 0;
+
+    if (Keys[keyIndexes[0]])
     {
+        playerCreature->dir.v[1] = -1.f;
+    }
 
-        playerCreature->dir.v[0] = 0;
-        playerCreature->dir.v[1] = 0;
+    if (Keys[keyIndexes[1]])
+    {
+        playerCreature->dir.v[1] = 1.f;
+    }
 
-        if (Keys[keyIndexes[0]])
+    if (Keys[keyIndexes[2]])
+    {
+        playerCreature->dir.v[0] = -1.f;
+    }
+
+    if (Keys[keyIndexes[3]])
+    {
+        playerCreature->dir.v[0] = 1.f;
+    }
+
+    //Vector3D oldPos = playerCreature->pos;
+    playerCreature->Move(speed, Mapas.width * 32, Mapas.height * 32);
+
+    const float fTileSize = 32.f;
+
+
+    float OffsetX = (player.viewPortSize.v[0] - player.viewPortPos.v[0])/ 2.f - playerCreature->pos.v[0] + player.viewPortPos.v[0];
+
+    if ((OffsetX > player.viewPortPos.v[0]) || 
+         (Mapas.width * fTileSize <= (player.viewPortSize.v[0] - player.viewPortPos.v[0])))
+    {
+        OffsetX = player.viewPortPos.v[0];
+    }
+
+    if (OffsetX < (Mapas.width * fTileSize) * -1.f + player.viewPortSize.v[0])
+    {
+        OffsetX = (Mapas.width * fTileSize) * -1.f + player.viewPortSize.v[0];
+    }
+
+    float OffsetY = (player.viewPortSize.v[1] - player.viewPortPos.v[1]) / 2.f - playerCreature->pos.v[1];
+
+    if ((OffsetY > player.viewPortPos.v[1])||
+        (Mapas.height * fTileSize <= (player.viewPortSize.v[1] - player.viewPortPos.v[1])))
+    {
+        OffsetY = player.viewPortPos.v[1];
+    }
+
+    if (OffsetY < 0)
+    {
+        OffsetY = 0.f;
+    }
+
+    player.mapOffset = Vector3D( OffsetX, OffsetY, 0);
+
+
+    if ((OldKeys[keyIndexes[4]]) && (!Keys[keyIndexes[4]]))
+    {
+        Creatures.interact(player.activeCreature, ss);
+
+        if (playerCreature->procreating)
         {
-            playerCreature->dir.v[1] = -1.f;
+            Creatures.nextActive(player.activeCreature, player.activeCreature);
         }
 
-        if (Keys[keyIndexes[1]])
-        {
-            playerCreature->dir.v[1] = 1.f;
-        }
+    }
 
-        if (Keys[keyIndexes[2]])
-        {
-            playerCreature->dir.v[0] = -1.f;
-        }
-
-        if (Keys[keyIndexes[3]])
-        {
-            playerCreature->dir.v[0] = 1.f;
-        }
-
-        //Vector3D oldPos = playerCreature->pos;
-        playerCreature->Move(speed, Mapas.width * 32, Mapas.height * 32);
-
-
-        const float fTileSize = 32.f;
-
-
-        float OffsetX = (player.viewPortSize.v[0] - player.viewPortPos.v[0])/ 2.f - playerCreature->pos.v[0] + player.viewPortPos.v[0];
-
-        if ((OffsetX > player.viewPortPos.v[0]) || 
-            (Mapas.width * fTileSize <= (player.viewPortSize.v[0] - player.viewPortPos.v[0])))
-        {
-            OffsetX = player.viewPortPos.v[0];
-        }
-
-        if (OffsetX < (Mapas.width * fTileSize) * -1.f + player.viewPortSize.v[0])
-        {
-                OffsetX = (Mapas.width * fTileSize) * -1.f + player.viewPortSize.v[0];
-        }
-
-        float OffsetY = (player.viewPortSize.v[1] - player.viewPortPos.v[1]) / 2.f - playerCreature->pos.v[1];
-
-        if ((OffsetY > player.viewPortPos.v[1])||
-            (Mapas.height * fTileSize <= (player.viewPortSize.v[1] - player.viewPortPos.v[1])))
-        {
-            OffsetY = player.viewPortPos.v[1];
-        }
-
-        if (OffsetY < 0)
-        {
-            OffsetY = 0.f;
-        }
-
-        player.mapOffset = Vector3D( OffsetX, OffsetY, 0);
-
-
-        if ((OldKeys[keyIndexes[4]]) && (!Keys[keyIndexes[4]]))
-        {
-            Creatures.interact(player.activeCreature, ss);
-
-            if (playerCreature->procreating)
-            {
-                Creatures.nextActive(player.activeCreature, player.activeCreature);
-            }
-
-        }
-
-        if ((OldKeys[keyIndexes[5]]) && (!Keys[keyIndexes[5]]))
-        {
-            playerCreature->terraform(Mapas);
-        }
+    if ((OldKeys[keyIndexes[5]]) && (!Keys[keyIndexes[5]]))
+    {
+        playerCreature->terraform(Mapas);
     }
 
 }
