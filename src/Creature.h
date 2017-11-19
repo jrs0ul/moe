@@ -53,9 +53,7 @@ public:
 
     void draw(PicsContainer& pics, float OffsetX, float OffsetY, float ViewPortWidht, float ViewPortHeight);
     void AI(float fDeltaTime, 
-            int iMaxAreaX, 
-            int iMaxAreaY, 
-            const LevelMap& map,
+            LevelMap& map,
             DArray<Creature>& creatures);
 
     void fight(Creature& other);
@@ -67,6 +65,9 @@ public:
     void makeGoat();
     void makeSnake();
     void makeShark();
+
+    void makeWarrior();
+    void makeBuilder();
 
     bool canProcreateWith(Creature* other) const;
 

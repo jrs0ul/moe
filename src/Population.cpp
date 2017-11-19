@@ -18,7 +18,7 @@ void Population::Update(float fDeltaTime,
 
         if (!startImpact)
         {
-            c->AI(fDeltaTime, iScreenWidth, iScreenHeight, Mapas, creatures);
+            c->AI(fDeltaTime, Mapas, creatures);
         }
 
         c->animate();
@@ -51,8 +51,8 @@ void Population::Update(float fDeltaTime,
                         switch (pUp->type)
                         {
                             case PT_FEMALE: SpawnAFemale(c->race); break;
-                            case PT_WARRIOR: c->isWarrior = true; break;
-                            case PT_BUILDER: c->isBuilder = true; break;
+                            case PT_WARRIOR: c->makeWarrior(); break;
+                            case PT_BUILDER: c->makeBuilder(); break;
                             case PT_TIMEUP: secondsUntilImpact += 5; break;
                             case PT_TIMEDOWN: secondsUntilImpact -= 1 ; break;
                             case PT_FERTILITY: Fertilize(c->race); break;

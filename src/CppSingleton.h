@@ -110,7 +110,7 @@ private:
     void selectRaceLogic();
 
 
-    void SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed);
+    void SinglePlayerAI(float speed);
 
     void whoWon();
     void mainMenuLogic();

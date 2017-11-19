@@ -370,7 +370,7 @@ void Singleton::gameLogic()
         }
         else
         {
-            SinglePlayerAI(kiScreenWidth, kiScreenHeight, 2.f);
+            SinglePlayerAI(2.f);
         }
 
     }
@@ -524,7 +524,7 @@ void Singleton::selectRaceLogic(){
     }
 }
 
-void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
+void Singleton::SinglePlayerAI(float speed)
 {
     Creature* c = Creatures.get(p[1].activeCreature);
 
@@ -589,7 +589,7 @@ void Singleton::SinglePlayerAI(int iMaxAreaX, int iMaxAreaY, float speed)
     }
     else
     {
-        c->Move(speed, iMaxAreaX, iMaxAreaY);
+        c->Move(speed, Mapas.width * 32, Mapas.height * 32);
         c->haveDir = false;
     }
 
@@ -826,7 +826,7 @@ void Singleton::ControlCreature(Player& player, const int* keyIndexes, Creature*
         }
 
         //Vector3D oldPos = playerCreature->pos;
-        playerCreature->Move(speed, kiScreenWidth, kiScreenHeight);
+        playerCreature->Move(speed, Mapas.width * 32, Mapas.height * 32);
 
 
         const float fTileSize = 32.f;

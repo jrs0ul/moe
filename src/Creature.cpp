@@ -81,7 +81,7 @@ void  Creature::makePenguin(){
     attack = 10;
     maxProcreationCount = 3;
 }
-//-----------------------------
+
 void Creature::makeGoat()
 {
     iTerrainBonuses[ET_ICE] = -2;
@@ -96,7 +96,7 @@ void Creature::makeGoat()
     attack = 20;
     maxProcreationCount = 6;
 }
-//-----------------------------
+
 void Creature::makeSnake(){
 
     iTerrainBonuses[ET_ICE] = -4;
@@ -111,8 +111,9 @@ void Creature::makeSnake(){
     attack = 15;
     maxProcreationCount = 2;
 }
-//-----------------------------
-void Creature::makeShark(){
+
+void Creature::makeShark()
+{
 
     iTerrainBonuses[ET_ICE] = -1;
     iTerrainBonuses[ET_GROUND] = -2;
@@ -126,6 +127,19 @@ void Creature::makeShark(){
     attack = 25;
     maxProcreationCount = 4;
 }
+
+void Creature::makeWarrior()
+{
+    isWarrior = true;
+    isBuilder = false;
+}
+
+void Creature::makeBuilder()
+{
+    isBuilder = true;
+    isWarrior = false;
+}
+
 
 bool Creature::canProcreateWith(Creature* other) const
 {
@@ -222,8 +236,7 @@ void Creature::Move(float fSpeed, int iMaxAreaX, int iMaxAreaY)
 }
 
 void Creature::AI(float fDeltaTime, 
-                  int iMaxAreaX, int iMaxAreaY,
-                  const LevelMap& map,
+                  LevelMap& map,
                   DArray<Creature>& creatures)
 {
 
@@ -313,6 +326,10 @@ void Creature::AI(float fDeltaTime,
 
             //}
         }
+        else if (isBuilder)
+        {
+            terraform(map);
+        }
 
         if ((movetics < 50) || (isWarrior && haveDir)) 
         {
@@ -321,8 +338,8 @@ void Creature::AI(float fDeltaTime,
             Vector3D posOld = pos;
             pos = pos + Vector3D(dir.v[0] * speed, dir.v[1] * speed, 0);
 
-            if (!((pos.v[0] > radius) && (pos.v[0] < iMaxAreaX - radius)
-              && (pos.v[1] > radius)&&(pos.v[1] < iMaxAreaY - radius)))
+            if (!((pos.v[0] > radius) && (pos.v[0] < map.width * 32.f - radius)
+              && (pos.v[1] > radius)&&(pos.v[1] < map.height * 32.f - radius)))
             {
                 pos = posOld;
             }
