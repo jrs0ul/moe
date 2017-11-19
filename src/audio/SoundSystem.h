@@ -37,36 +37,34 @@ struct SoundData{
 
 class SoundSystem{
 
+public:
+    SoundSystem(){alcdev=0; buffers=0; sources=0; volume = 0.9f; }
+
+    bool    init(ALCchar* dev);
+    void    loadFiles(const char* BasePath, const char* list);
+    void    setupListener(float * pos, float * orientation);
+    void    setSoundPos(unsigned int index, float * pos);
+    void    playsound(unsigned int index, bool loop = false);
+    void    freeData();
+    bool    isPlaying(unsigned int index);
+    ALuint  getBuffer(unsigned int index){return buffers[index];}
+    bool    AttachBufferToSource(unsigned bufferIndex, unsigned& destination);
+    void    stopAll();
+    void    exit();
+    void    setVolume(float vol){volume = (vol > 1.0f)?1.0f:((vol < 0.0f)?0:vol);}
+    float   getVolume(){return volume;};
+
+private:
+    char* LoadOGG(char *fileName,  ALsizei & size, ALenum &format, ALsizei &freq);
+
+private:
     ALCdevice* alcdev;
     ALCcontext* alccont;
 
     ALuint* buffers;
     ALuint* sources;
     DArray<SoundData> audioInfo;
-
-    char* LoadOGG(char *fileName,  ALsizei & size, ALenum &format, ALsizei &freq);
-
     float volume;
-
-
-public:
-    SoundSystem(){alcdev=0; buffers=0; sources=0; volume = 0.9f; }
-    bool init(ALCchar* dev);
-    void loadFiles(const char* BasePath, const char* list);
-    void setupListener(float * pos, float * orientation);
-    void setSoundPos(unsigned int index, float * pos);
-    void playsound(unsigned int index, bool loop=false);
-    void freeData();
-    bool isPlaying(unsigned int index);
-    ALuint getBuffer(unsigned int index){return buffers[index];}
-    void stopAll();
-    void exit();
-    void setVolume(float vol){volume = (vol > 1.0f)?1.0f:((vol < 0.0f)?0:vol);}
-    float getVolume(){return volume;};
-
 };
-
-
-
 
 #endif //SOUND_SYSTEM_H

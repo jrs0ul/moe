@@ -254,6 +254,20 @@ void MakeDir(const char * path){
 
 //--------------------------------------------------------------
 
+Vector3D Lerp(Vector3D org, Vector3D dest, float fProgress)
+{
+
+    Vector3D result;
+
+    result.v[0] = org.v[0] + fProgress * (dest.v[0] - org.v[0]);
+    result.v[1] = org.v[1] + fProgress * (dest.v[1] - org.v[1]);
+    result.v[2] = org.v[2] + fProgress * (dest.v[2] - org.v[2]);
+
+    return result;
+
+}
+
+
 bool CirclesColide(float x1,float y1,float radius1, float x2, float y2, float radius2){
 
      float difx = (float) fabs (x1 - x2);

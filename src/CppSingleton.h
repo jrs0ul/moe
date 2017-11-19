@@ -54,7 +54,8 @@ public:
 
 private:
     Singleton()
-    : m_fImpactProgress(0.f)
+    : m_Meteor(nullptr)
+    , m_fImpactProgress(0.f)
     {
         gamestate = TITLE;
         Exit = false;
@@ -189,7 +190,7 @@ public:
 
 private:
     static Singleton* m_Instance;
-    Meteor            m_Meteor;
+    Meteor*           m_Meteor;
     PowerUpArray      m_PowerUps;
     float             m_fImpactProgress;
 };

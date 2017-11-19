@@ -45,6 +45,7 @@ struct Lines{
     DArray<ptext> l;
 };
 
+int     roundDouble2Int(double x);
 
 //converts wide character string to ascii string with special characters
 //which represent lithuanian letters. Usefull for bitmap font
@@ -67,11 +68,11 @@ void GetHomePath(char * _homePath);
 
 //Multiplatform directory creation
 void    MakeDir(const char * path);
-
-int roundDouble2Int(double x);
-
 void    GetFileList(const char * path, Lines& l);
 void    GetDirectoryList(const char* path, Lines& l);
+
+
+Vector3D Lerp(Vector3D org, Vector3D dest, float fProgress);
 
 bool    CirclesColide(float x1,float y1,float radius1, float x2, float y2, float radius2);
 

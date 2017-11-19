@@ -405,18 +405,8 @@ void Creature::AI(float fDeltaTime,
 
 void Creature::attachBuffer(SoundSystem& ss, unsigned int index, unsigned int place){
     
-    if (alIsSource(soundSources[place]))
-        alDeleteSources(1, &soundSources[place]);
-    alGenSources(1, &soundSources[place]);
-    alSourcei(soundSources[place], AL_BUFFER, ss.getBuffer(index));
+    ss.AttachBufferToSource(index, soundSources[place]);
     
-    //ALenum r=0;
-    //r=alGetError();
-    //if ( r != AL_NO_ERROR){
-    //    printf("Error: %x while attaching\n",r);
-    //}
-   // else
-   //     puts("attached");
 }
 
 

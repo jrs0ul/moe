@@ -108,7 +108,7 @@ void Singleton::drawPlayersView(const Player& p)
 
     if ((launchFireBall) && (!startImpact))
     {
-        m_Meteor.Render(pics, p.mapOffset.v[0], p.mapOffset.v[1]);
+        m_Meteor->Render(pics, p.mapOffset.v[0], p.mapOffset.v[1]);
     }
 
     if (startImpact)
@@ -317,12 +317,12 @@ void Singleton::gameLogic()
     }
 
 
-    if (launchFireBall)
+    if (launchFireBall && !startImpact)
     {
-        m_Meteor.AnimateFireBall();
-        m_Meteor.AnimateTrail();
+        m_Meteor->AnimateFireBall();
+        m_Meteor->AnimateTrail();
 
-        if (m_Meteor.Update(ss))
+        if (m_Meteor->Update(DeltaTime))
         {
             startImpact = true;
         }
@@ -430,12 +430,23 @@ void Singleton::resetGame(){
     showWinner = false;
     winnerRace = 0;
 
-    m_Meteor.Destroy();
-    m_PowerUps.m_PowerUps.destroy();
-
     Creatures.destroy();
     Mapas.generate(MaxMapWidth, MaxMapHeight);
 
+
+    if (m_Meteor)
+    {
+        delete m_Meteor;
+    }
+
+    m_Meteor = new Meteor();
+
+    m_Meteor->AttachSoundSources(ss, 0);
+    m_Meteor->SetDestination((Mapas.width * 32) / 2, (Mapas.height * 32) / 2);
+
+    m_PowerUps.m_PowerUps.destroy();
+
+    
     Creatures.create(p[0].raceIndex, p[1].raceIndex, ss);
 
     p[0].activeCreature = 0;
@@ -777,7 +788,11 @@ void Singleton::destroy(){
 
     Creatures.destroy();
     Mapas.destroy();
-    m_Meteor.Destroy();
+
+    if (m_Meteor)
+    {
+        delete m_Meteor;
+    }
 
     ss.exit();
     pics.destroy();

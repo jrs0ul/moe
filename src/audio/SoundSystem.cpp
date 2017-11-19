@@ -162,7 +162,10 @@ void SoundSystem::exit(){
                 data.name[0]=0;
                 int result = 0;
                 result = fscanf(failas,"%s\n",data.name);
-                audioInfo.add(data);
+                if (result)
+                {
+                    audioInfo.add(data);
+                }
             }
 
             fclose(failas);
@@ -246,7 +249,26 @@ bool SoundSystem::isPlaying(unsigned int index){
 
 }
 
-//-------------------------------------------
+bool SoundSystem::AttachBufferToSource(unsigned bufferIndex, unsigned& destination)
+{
+    if (alIsSource(destination))
+    {
+        alDeleteSources(1, &destination);
+    }
+
+    alGenSources(1, &destination);
+    alSourcei(destination, AL_BUFFER, getBuffer(bufferIndex));
+    ALenum r = alGetError();
+    if ( r == AL_NO_ERROR)
+    {
+        return false;
+    }
+
+    return true;
+
+}
+
+
 void SoundSystem::setupListener(float * position, float * orientation){
     alListener3f(AL_POSITION,position[0], position[2], position[1]);
     alListenerf(AL_GAIN, volume);

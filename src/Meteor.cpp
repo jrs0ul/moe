@@ -1,4 +1,19 @@
 #include "Meteor.h"
+#include "Utils.h"
+
+Meteor::~Meteor()
+{
+    trail.destroy();
+
+    if (alIsSource(soundSources[0])){
+        alSourceStop(soundSources[0]);
+        alDeleteSources(1, &soundSources[0]);
+    }
+
+    printf("destructed\n");
+
+}
+
 
 void Meteor::Render(PicsContainer& pics, float OffsetX, float OffsetY)
 {
@@ -16,17 +31,20 @@ void Meteor::Render(PicsContainer& pics, float OffsetX, float OffsetY)
               fireballPos.v[1] + OffsetY,
               fireballFrame,
               true,
-              3.7f - fireBallTics/80.0f,
-              3.7f - fireBallTics/80.0f);
+              3.7f - 2.f * fProgress,
+              3.7f - 2.f * fProgress);
 
 }
 
 void Meteor::AnimateFireBall()
 {
-    fireballPos = fireballPos +
-                      Vector3D(fireballDir.v[0]*2,fireballDir.v[1]*2,0);
+
+    fireballPos = Lerp(fireBallOrigin, fireBallDestination, fProgress);
+
     fireballAnimTics++;
-    if (fireballAnimTics > 10){
+
+    if (fireballAnimTics > 10)
+    {
 
         Cloud c;
         c.pos = fireballPos;
@@ -56,26 +74,38 @@ void Meteor::AnimateTrail()
 
 }
 
-bool Meteor::Update(SoundSystem& ss)
+void Meteor::AttachSoundSources(SoundSystem& ss, unsigned index)
 {
-    fireBallTics++;
-    if (fireBallTics == 150){
+    if (soundSourceCount > 2)
+    {
+        return;
+    }
 
-        if (!ss.isPlaying(0)){
-            ss.playsound(0);
-            trail.destroy();
+    ss.AttachBufferToSource(index, soundSources[soundSourceCount]);
+
+    soundSourceCount++;
+}
+
+void Meteor::SetDestination(float x, float y)
+{
+    fireBallDestination = Vector3D(x, y, 0.f);
+}
+
+bool Meteor::Update(float fDeltaTime)
+{
+    fProgress += fDeltaTime * 0.5f;
+    
+    if (fProgress > 1.f){
+
+        if (alIsSource(soundSources[0]))
+        {
+            alSourcePlay(soundSources[0]);
         }
+
+        trail.destroy();
         return true;
     }
 
     return false;
  
-}
-
-void Meteor::Destroy()
-{
-    fireBallTics = 0;
-    fireballPos = Vector3D(600,10,0);
-    fireballDir = Vector3D(-1, 0.7,0);
-    trail.destroy();
 }
