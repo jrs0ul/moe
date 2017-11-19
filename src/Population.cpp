@@ -217,10 +217,17 @@ void Population::interact(unsigned interactor, SoundSystem& ss)
             {
                 c->procreationCount++;
             }
+            else if (other->isFemale == false)
+            {
+                other->procreationCount++;
+            }
+
             c->procreating = true;
             other->procreating = true;
             other->procreationProgress = 0.f;
             c->procreationProgress = 0.f;
+
+            return;
         }
         else if ((other->race != c->race) && (c->isWarrior))
         {
@@ -240,7 +247,7 @@ void Population::groundEffect(unsigned i, LevelMap& map){
     if (c->damageTics > 10){
         c->damageTics = 0;
 
-        const float radius = c->radius/2.f;
+        const float radius = c->radius / 2.f;
 
         int x1 = (c->pos.v[0] - radius) / 32;
         int y1 = (c->pos.v[1] - radius) / 32;
@@ -373,16 +380,17 @@ void Population::Fertilize(unsigned race)
 
         if ((race == c->race) && (!c->dead))
         {
-            if (c->isFemale)
+            if (c->isFemale && c->gaveBirth)
             {
                 c->gaveBirth = false;
+                return;
             }
-            else
+            else if (c->isFemale == false && c->procreationCount >= c->maxProcreationCount)
             {
                 c->procreationCount = 0;
+                return;
             }
 
-            return;
         }
     }
 

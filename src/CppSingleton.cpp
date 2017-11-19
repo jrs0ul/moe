@@ -571,13 +571,19 @@ void Singleton::SinglePlayerAI(float speed)
             dir.normalize();
             c->dir = dir;
         }
-        else //look for a female powerup
+        else //look for powerups
         {
             Vector3D pDir;
             int iFemaleCount = Creatures.FemaleCount(c->race);
             int iRaceCount = Creatures.countByRace(c->race);
 
             if (m_PowerUps.FindNearestPowerUp(PT_WARRIOR, c->pos, pDir))
+            {
+                pDir.normalize();
+                c->dir = pDir;
+                c->haveDir = true;
+            }
+            else if (m_PowerUps.FindNearestPowerUp(PT_BUILDER, c->pos, pDir))
             {
                 pDir.normalize();
                 c->dir = pDir;
@@ -606,7 +612,7 @@ void Singleton::SinglePlayerAI(float speed)
 
     Creatures.interact(p[1].activeCreature, ss);
 
-    if ((c->procreationCount >= c->maxProcreationCount) || (c->gaveBirth) || (c->isWarrior))
+    if ((c->procreationCount >= c->maxProcreationCount) || (c->gaveBirth) || (c->isWarrior) || (c->isBuilder))
     {
         Creatures.nextActive(p[1].activeCreature, p[1].activeCreature);
     }

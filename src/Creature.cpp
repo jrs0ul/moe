@@ -11,7 +11,7 @@ void Creature::draw(PicsContainer& pics, float OffsetX, float OffsetY, float Vie
         return;
     }
 
-    const COLOR c = ((gaveBirth)? COLOR(0.5,0.5, 1.f, 1.f - deathProgress) : COLOR(1.f, 1.f, 1.f, 1.f - deathProgress)) ;
+    const COLOR c = ((gaveBirth && isFemale)? COLOR(0.5,0.5, 1.f, 1.f - deathProgress) : COLOR(1.f, 1.f, 1.f, 1.f - deathProgress)) ;
     const COLOR procreationColor = (controled)? COLOR(0, 0, 1, 0.8) : COLOR(0,0,0.6f, 0.5f);
 
     if ((controled) && (!dead))
@@ -180,11 +180,11 @@ void Creature::fight(Creature& other)
     int oponentDamage = Random(0, other.attack / 2);
     hp -= oponentDamage;
 
-    printf("your damage: %d oponent's :%d\n", damage, oponentDamage);
+    /*printf("your damage: %d oponent's :%d\n", damage, oponentDamage);
     if (other.hp < 0)
     {
         printf("-------------\n");
-    }
+    }*/
 }
 
 void Creature::terraform(LevelMap& map)
