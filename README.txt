@@ -1,19 +1,17 @@
-The game is only for two players.
+Game goal:
+----------------
+Spawn as much creatures of your kind as you can until the meteor hits.
+
 Controls:
-player one:
-arrow keys - controls one of active creatures
-return - multiplies
-right-shift - switches focuses to another creature of your kind
+----------------
+Player one:     Player two: 
+arrow keys      w, a, s, d  -> controls the active creature
+return          e           -> procreates with a creature of your race nearby or attacks
+right-shift     space       -> switches to the another creature of your kind
+Backspace       tap         -> terraforms if the creature is a builder
 
-player two:
-w,a,s,d - controls one of active creatures
-e - multiplies
-space - switches focus to another creature of your kind
+Compiling:
+----------
+You will need scons, libOpenAl, libogg, libVorbis and libSDL.
+To build the game just type 'scons' in your terminal.
 
-Each player selects one of the four species. Move active creature to the nearest creature of your species and press multiply button. The new creature is spawned, try to spawn as many cratures as you can, until time runs out. Then the meteorite will fall down and transforms the terrain. Winner is the player who has the biggest number of survivors.
-
-------------
-
-Linux users will need libOpenAl, libogg, libVorbis and libSDL.
-
-To install OpenAL runtime, Windows users should run oalinst.exe(which is in the game directory).  Also To ensure best OpenGL experience, Windows users should use video card drivers supplied by their vendor(not the Microsft ones).
