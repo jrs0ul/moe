@@ -8,7 +8,7 @@ Player one:     Player two:
 arrow keys      w, a, s, d  -> controls the active creature
 return          e           -> procreates with a creature of your race nearby or attacks
 right-shift     space       -> switches to the another creature of your kind
-Backspace       tap         -> terraforms if the creature is a builder
+Backspace       q           -> terraforms if the creature is a builder
 
 Compiling:
 ----------

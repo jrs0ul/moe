@@ -85,7 +85,7 @@ void  Creature::makePenguin(){
 void Creature::makeGoat()
 {
     iTerrainBonuses[ET_ICE] = -2;
-    iTerrainBonuses[ET_GROUND] = 2;
+    iTerrainBonuses[ET_GROUND] = 0;
     iTerrainBonuses[ET_WATER] = -3;
     iTerrainBonuses[ET_GRASS] = 5;
     iTerrainBonuses[ET_LAVA] = -10;
@@ -102,7 +102,7 @@ void Creature::makeSnake(){
     iTerrainBonuses[ET_ICE] = -4;
     iTerrainBonuses[ET_GROUND] = 5;
     iTerrainBonuses[ET_WATER] = -2;
-    iTerrainBonuses[ET_GRASS] = 2;
+    iTerrainBonuses[ET_GRASS] = 1;
     iTerrainBonuses[ET_LAVA] = -10;
 
     race = 6;
@@ -115,7 +115,7 @@ void Creature::makeSnake(){
 void Creature::makeShark()
 {
 
-    iTerrainBonuses[ET_ICE] = -1;
+    iTerrainBonuses[ET_ICE] = 0;
     iTerrainBonuses[ET_GROUND] = -2;
     iTerrainBonuses[ET_WATER] = 5;
     iTerrainBonuses[ET_GRASS] = -1;

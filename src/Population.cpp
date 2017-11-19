@@ -277,7 +277,7 @@ void Population::groundEffect(unsigned i, LevelMap& map){
 
         for (int i = 0; i < count; ++i)
         {
-            hpDifference += creatures[i].iTerrainBonuses[tileArray[i]];
+            hpDifference += c->iTerrainBonuses[tileArray[i]];
         }
 
         hpDifference = hpDifference / count;
