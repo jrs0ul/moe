@@ -39,13 +39,13 @@ if sys.platform == 'win32':
                        'openal32', 'vorbisfile', 'ogg'])
 else: #Mac OS X
     if sys.platform == 'darwin':
-        env['FRAMEWORKS'] = ['Cocoa', 'SDL', 'OPENGL', 'OpenAL','vorbis', 'Ogg']
+        env.AppendUnique(FRAMEWORKPATH='/Library/Frameworks/')
+        env['FRAMEWORKS'] = ['Cocoa', 'OPENGL', 'OpenAL', 'SDL', 'Ogg', 'Vorbis']
         env.Append(LIBS = ['iconv', 'pthread'])
-        env.Append(CCFLAGS = ['-arch', 'i386'])
+        env.Append(CCFLAGS = ['-std=c++11'])
         env.Object('src/osx/SDLMain.m', OBJPREFIX = OBJ_DIR,
-                   CCFLAGS = ['-arch', 'i386', '-I/Library/Frameworks/SDL.framework/Headers/'])
+                   CCFLAGS = ['-I/Library/Frameworks/SDL.framework/Headers/', '-L/usr/local/lib'])
         code.append('obj/SDLMain.o')
-        env.Append(LINKFLAGS = ['-arch', 'i386'])
     else: #Linux
         env.Append(LIBS = ['SDL','GL', 'openal', 'vorbisfile',
                            'ogg', 'pthread'])
